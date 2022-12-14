@@ -1,0 +1,32 @@
+###
+GET http://localhost:8080/api/books?search=""&sort=""&page=0&size=10
+Accept: application/json
+
+###
+GET http://localhost:8080/api/books/1
+Accept: application/json
+
+###
+POST http://localhost:8080/api/books
+Content-Type: application/json
+Accept: application/json
+
+{
+    "releaseId": 1,
+    "physicalId": "",
+    "libraryId": 1
+}
+
+
+###
+PUT http://localhost:8080/api/books/1
+Content-Type: application/json
+Accept: application/json
+
+{
+    "releaseId": 1,
+    "libraryId": 1
+}
+
+###
+DELETE http://localhost:8080/api/books/1

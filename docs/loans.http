@@ -1,0 +1,36 @@
+###
+GET http://localhost:8080/api/loans?search=""&sort=""&page=0&size=10
+Accept: application/json
+
+###
+GET http://localhost:8080/api/loans/1
+Accept: application/json
+
+###
+POST http://localhost:8080/api/loans
+Content-Type: application/json
+Accept: application/json
+
+{
+    "loanDate": "",
+    "actualReturnDate": "",
+    "returnDate": "",
+    "userId": "",
+    "bookId": ""
+}
+
+###
+POST http://localhost:8080/api/loans/1/return
+Accept: application/json
+
+###
+POST http://localhost:8080/api/loans/1/extend
+Content-Type: application/json
+Accept: application/json
+
+{
+    "returnDate": ""
+}
+
+###
+DELETE http://localhost:8080/api/loans/1

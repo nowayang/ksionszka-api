@@ -1,0 +1,20 @@
+###
+GET http://localhost:8080/api/reservations?search=""&sort=""&page=0&size=10
+Accept: application/json
+
+###
+GET http://localhost:8080/api/reservations/1
+Accept: application/json
+
+###
+POST http://localhost:8080/api/reservations
+Content-Type: application/json
+Accept: application/json
+
+{
+    "userId": "",
+    "bookId": ""
+}
+
+###
+DELETE http://localhost:8080/api/reservations/1

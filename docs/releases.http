@@ -1,0 +1,38 @@
+###
+GET http://localhost:8080/api/releases?search=""&sort=""&page=0&size=10
+Accept: application/json
+
+###
+GET http://localhost:8080/api/releases/1
+Accept: application/json
+
+###
+POST http://localhost:8080/api/releases
+Content-Type: application/json
+Accept: application/json
+
+{
+    "isbn": "",
+    "publisher": "",
+    "date": "",
+    "author": "",
+    "language": "",
+    "genre": ""
+}
+
+###
+PUT http://localhost:8080/api/releases/1
+Content-Type: application/json
+Accept: application/json
+
+{
+    "isbn": "",
+    "publisher": "",
+    "date": "",
+    "author": "",
+    "language": "",
+    "genre": ""
+}
+
+###
+DELETE http://localhost:8080/api/releases/1
