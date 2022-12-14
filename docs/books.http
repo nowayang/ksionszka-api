@@ -13,8 +13,7 @@ Accept: application/json
 
 {
     "releaseId": 1,
-    "physicalId": "",
-    "libraryId": 1
+    "physicalId": ""
 }
 
 
@@ -24,8 +23,7 @@ Content-Type: application/json
 Accept: application/json
 
 {
-    "releaseId": 1,
-    "libraryId": 1
+    "releaseId": 1
 }
 
 ###
