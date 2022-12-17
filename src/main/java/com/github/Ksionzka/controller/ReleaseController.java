@@ -11,6 +11,8 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.ZonedDateTime;
+
 @RestController("/api/releases")
 @RequiredArgsConstructor
 public class ReleaseController implements BaseController<ReleaseEntity, String> {
@@ -37,14 +39,14 @@ public class ReleaseController implements BaseController<ReleaseEntity, String> 
     @GetMapping("/{id}")
     @Transactional(readOnly = true)
     public ReleaseEntity getById(@PathVariable String id) {
-        return this.releaseRepository.findById(id).orElseThrow(() -> new RuntimeException("NOT_FOUND"));
+        return this.releaseRepository.getOrThrowById(id);
     }
 
     @PostMapping
     @Transactional
     public ReleaseEntity createRelease(@RequestBody CreateReleaseRequest request) {
         ReleaseEntity releaseEntity = new ReleaseEntity();
-        BeanUtils.copyProperties(request, releaseEntity, "");
+        BeanUtils.copyProperties(request, releaseEntity);
         return this.releaseRepository.save(releaseEntity);
     }
 
@@ -52,7 +54,7 @@ public class ReleaseController implements BaseController<ReleaseEntity, String> 
     @Transactional
     public ReleaseEntity updateRelease(@PathVariable String id, @RequestBody CreateReleaseRequest request) {
         ReleaseEntity releaseEntity = this.getById(id);
-        BeanUtils.copyProperties(request, releaseEntity, "");
+        BeanUtils.copyProperties(request, releaseEntity);
         return this.releaseRepository.save(releaseEntity);
     }
 

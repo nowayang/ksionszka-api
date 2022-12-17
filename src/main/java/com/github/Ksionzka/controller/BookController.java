@@ -41,17 +41,16 @@ public class BookController implements BaseController<BookEntity, String> {
     @GetMapping("/{id}")
     @Transactional(readOnly = true)
     public BookEntity getById(@PathVariable String id) {
-        return this.bookRepository.findById(id).orElseThrow(() -> new RuntimeException("NOT_FOUND"));
+        return this.bookRepository.getOrThrowById(id);
     }
 
     @PostMapping
     @Transactional
     public BookEntity createBook(@RequestBody CreateBookRequest request) {
         BookEntity bookEntity = new BookEntity();
-        bookEntity.setId(request.getPhysicalId());
 
-        ReleaseEntity release = this.releaseRepository.findById(request.getReleaseId()).orElseThrow(() -> new RuntimeException("NOT_FOUND"));
-        bookEntity.setRelease(release);
+        bookEntity.setId(request.getPhysicalId());
+        bookEntity.setRelease(this.releaseRepository.getOrThrowById(request.getReleaseId()));
 
         return this.bookRepository.save(bookEntity);
     }
@@ -62,11 +61,7 @@ public class BookController implements BaseController<BookEntity, String> {
         return this.bookRepository
             .findById(id)
             .map(bookEntity -> {
-                ReleaseEntity release = this.releaseRepository
-                    .findById(request.getReleaseId())
-                    .orElseThrow(() -> new RuntimeException("NOT_FOUND"));
-
-                bookEntity.setRelease(release);
+                bookEntity.setRelease(this.releaseRepository.getOrThrowById(request.getReleaseId()));
                 return this.bookRepository.save(bookEntity);
             })
             .orElseThrow(() -> new RuntimeException("NOT_FOUND"));
