@@ -19,7 +19,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.ZonedDateTime;
 
-@RestController("/api/reservations")
+@RestController
+@RequestMapping("/api/reservations")
 @RequiredArgsConstructor
 public class ReservationController implements BaseController<ReservationEntity, String> {
     private final ReservationRepository reservationRepository;

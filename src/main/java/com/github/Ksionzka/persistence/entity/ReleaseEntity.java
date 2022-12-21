@@ -4,9 +4,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.time.ZonedDateTime;
 
 @Entity
@@ -19,18 +17,18 @@ public class ReleaseEntity {
     @Id
     private String id;
 
-    @Column(columnDefinition = "char(255) not null")
+    @Column(columnDefinition = "varchar(255) not null")
     private String publisher;
 
     @Column(nullable = false)
     private ZonedDateTime date;
 
-    @Column(columnDefinition = "char(255) not null")
+    @Column(columnDefinition = "varchar(255) not null")
     private String author;
 
-    @Column(columnDefinition = "char(255) not null")
+    @Column(columnDefinition = "varchar(255) not null")
     private String language;
 
-    @Column(columnDefinition = "char(255) not null")
+    @Column(columnDefinition = "varchar(255) not null")
     private String genre;
 }

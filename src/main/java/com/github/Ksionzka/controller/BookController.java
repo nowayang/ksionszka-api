@@ -13,7 +13,8 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
-@RestController("/api/books")
+@RestController
+@RequestMapping("/api/books")
 @RequiredArgsConstructor
 public class BookController implements BaseController<BookEntity, String> {
     private final BookRepository bookRepository;

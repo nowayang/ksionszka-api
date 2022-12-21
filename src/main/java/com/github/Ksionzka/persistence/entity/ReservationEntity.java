@@ -15,7 +15,7 @@ import java.time.ZonedDateTime;
 public class ReservationEntity {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false)
@@ -25,10 +25,10 @@ public class ReservationEntity {
     private ZonedDateTime reservationDate;
 
     @ManyToOne
-    @JoinColumn(referencedColumnName = "user_id", nullable = false)
+    @JoinColumn(referencedColumnName = "id", nullable = false)
     private UserEntity user;
 
     @ManyToOne
-    @JoinColumn(referencedColumnName = "book_id", nullable = false)
+    @JoinColumn(referencedColumnName = "id", nullable = false)
     private BookEntity book;
 }

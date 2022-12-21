@@ -13,15 +13,16 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.ZonedDateTime;
 
-@RestController("/api/releases")
+@RestController
+@RequestMapping("/api/releases")
 @RequiredArgsConstructor
 public class ReleaseController implements BaseController<ReleaseEntity, String> {
     private final ReleaseRepository releaseRepository;
 
     @Override
-    @GetMapping
+    @GetMapping()
     @Transactional(readOnly = true)
-    public Page<ReleaseEntity> findAll(Pageable pageable, @PathVariable String search) {
+    public Page<ReleaseEntity> findAll(Pageable pageable, @RequestParam String search) {
         final String searchTerm = this.getSearchTerm(search);
         return this.releaseRepository.findAll(
             (Specification<ReleaseEntity>)
@@ -59,8 +60,9 @@ public class ReleaseController implements BaseController<ReleaseEntity, String> 
     }
 
     @Override
+    @DeleteMapping("/{id}")
     @Transactional
-    public void deleteById(String id) {
+    public void deleteById(@PathVariable String id) {
         this.releaseRepository.deleteById(id);
     }
 }
