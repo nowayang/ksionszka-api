@@ -23,7 +23,7 @@ public class BookController implements BaseController<BookEntity, String> {
     @Override
     @GetMapping
     @Transactional(readOnly = true)
-    public Page<BookEntity> findAll(Pageable pageable, @PathVariable String search) {
+    public Page<BookEntity> findAll(Pageable pageable, @RequestParam String search) {
         final String searchTerm = this.getSearchTerm(search);
         return this.bookRepository.findAll(
             (Specification<BookEntity>)
@@ -51,6 +51,7 @@ public class BookController implements BaseController<BookEntity, String> {
         BookEntity bookEntity = new BookEntity();
 
         bookEntity.setId(request.getPhysicalId());
+        bookEntity.setName(request.getName());
         bookEntity.setRelease(this.releaseRepository.getOrThrowById(request.getReleaseId()));
 
         return this.bookRepository.save(bookEntity);
@@ -62,6 +63,7 @@ public class BookController implements BaseController<BookEntity, String> {
         return this.bookRepository
             .findById(id)
             .map(bookEntity -> {
+                bookEntity.setName(request.getName());
                 bookEntity.setRelease(this.releaseRepository.getOrThrowById(request.getReleaseId()));
                 return this.bookRepository.save(bookEntity);
             })
@@ -69,8 +71,9 @@ public class BookController implements BaseController<BookEntity, String> {
     }
 
     @Override
+    @DeleteMapping("/{id}")
     @Transactional
-    public void deleteById(String id) {
+    public void deleteById(@PathVariable String id) {
         this.bookRepository.deleteById(id);
     }
 }

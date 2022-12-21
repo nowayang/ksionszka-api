@@ -4,5 +4,6 @@ import lombok.Data;
 
 @Data
 public class UpdateBookRequest {
+    private String name;
     private String releaseId;
 }

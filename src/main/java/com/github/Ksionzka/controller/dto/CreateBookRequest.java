@@ -5,5 +5,6 @@ import lombok.Data;
 @Data
 public class CreateBookRequest {
     private String releaseId;
+    private String name;
     private String physicalId;
 }
