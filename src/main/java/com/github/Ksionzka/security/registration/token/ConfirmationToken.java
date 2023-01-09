@@ -1,6 +1,6 @@
 package com.github.Ksionzka.security.registration.token;
 
-import com.github.Ksionzka.security.AppUser;
+import com.github.Ksionzka.persistence.entity.UserEntity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -25,9 +25,9 @@ public class ConfirmationToken {
     private LocalDateTime confirmedAt;
     @ManyToOne
     @JoinColumn(nullable = false, name = "user_id")
-    private AppUser user;
+    private UserEntity user;
 
-    public ConfirmationToken(String token, LocalDateTime createdAt, LocalDateTime expiresAt, AppUser user) {
+    public ConfirmationToken(String token, LocalDateTime createdAt, LocalDateTime expiresAt, UserEntity user) {
         this.token = token;
         this.createdAt = createdAt;
         this.expiresAt = expiresAt;

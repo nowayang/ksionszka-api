@@ -1,5 +1,7 @@
 package com.github.Ksionzka.security;
 
+import com.github.Ksionzka.persistence.entity.UserEntity;
+import com.github.Ksionzka.persistence.repository.UserRepository;
 import com.github.Ksionzka.security.registration.token.ConfirmationToken;
 import com.github.Ksionzka.security.registration.token.ConfirmationTokenService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +34,7 @@ public class AppUserService implements UserDetailsService {
     }
 
     @Transactional
-    public String signUpUser(AppUser user) {
+    public String signUpUser(UserEntity user) {
         boolean present = userRepository.findByEmail(user.getEmail()).isPresent();
 
         if (present) {
@@ -53,8 +55,6 @@ public class AppUserService implements UserDetailsService {
         );
 
         tokenService.saveConfirmationToken(confirmationToken);
-
-
 
         return token;
     }

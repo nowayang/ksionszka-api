@@ -1,6 +1,6 @@
 package com.github.Ksionzka.security.registration;
 
-import com.github.Ksionzka.security.AppUser;
+import com.github.Ksionzka.persistence.entity.UserEntity;
 import com.github.Ksionzka.security.AppUserService;
 import com.github.Ksionzka.security.Role;
 import com.github.Ksionzka.security.email.EmailSender;
@@ -33,7 +33,7 @@ public class RegistrationService {
             throw new IllegalStateException("Email is not valid.");
         }
         String token = appUserService.signUpUser(
-                new AppUser(
+                new UserEntity(
                         request.getFirstName(),
                         request.getLastName(),
                         request.getEmail(),

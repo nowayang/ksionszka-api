@@ -4,7 +4,7 @@ import com.github.Ksionzka.controller.dto.CreateReservationRequest;
 import com.github.Ksionzka.persistence.entity.ReservationEntity;
 import com.github.Ksionzka.persistence.repository.BookRepository;
 import com.github.Ksionzka.persistence.repository.ReservationRepository;
-import com.github.Ksionzka.persistence.repository.UserRepositoryOLD;
+import com.github.Ksionzka.persistence.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -20,7 +20,7 @@ import java.time.ZonedDateTime;
 public class ReservationController implements BaseController<ReservationEntity, String> {
     private final ReservationRepository reservationRepository;
     private final BookRepository bookRepository;
-    private final UserRepositoryOLD userRepository;
+    private final UserRepository userRepository;
 
     @Override
     @GetMapping
