@@ -32,3 +32,10 @@ użytkownik
 książka
 
 
+Wymagania:
+
+MailDev (do testowania generowanych maili)
+```
+docker run -p 1025:1025 -p 1080:1080 --name maildev maildev/maildev
+```
+

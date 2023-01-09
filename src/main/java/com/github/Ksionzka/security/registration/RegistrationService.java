@@ -3,6 +3,7 @@ package com.github.Ksionzka.security.registration;
 import com.github.Ksionzka.security.AppUser;
 import com.github.Ksionzka.security.AppUserService;
 import com.github.Ksionzka.security.Role;
+import com.github.Ksionzka.security.email.EmailSender;
 import com.github.Ksionzka.security.registration.token.ConfirmationToken;
 import com.github.Ksionzka.security.registration.token.ConfirmationTokenService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,12 +24,15 @@ public class RegistrationService {
     @Autowired
     ConfirmationTokenService tokenService;
 
+    @Autowired
+    private EmailSender emailSender;
+
     public String register(RegistrationRequest request) {
 
         if (!emailValidator.test(request.getEmail())) {
             throw new IllegalStateException("Email is not valid.");
         }
-        return appUserService.signUpUser(
+        String token = appUserService.signUpUser(
                 new AppUser(
                         request.getFirstName(),
                         request.getLastName(),
@@ -37,6 +41,10 @@ public class RegistrationService {
                         Role.USER
                 )
         );
+        String link = "http://localhost:8080/api/register/confirm?token=" + token;
+        emailSender.send(request.getEmail(), buildEmail(request.getFirstName(), link));
+
+        return token;
     }
 
     @Transactional
