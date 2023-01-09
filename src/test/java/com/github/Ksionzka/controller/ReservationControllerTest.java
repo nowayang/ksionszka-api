@@ -16,7 +16,7 @@ import com.github.Ksionzka.persistence.entity.ReservationEntity;
 import com.github.Ksionzka.persistence.entity.UserEntity;
 import com.github.Ksionzka.persistence.repository.BookRepository;
 import com.github.Ksionzka.persistence.repository.ReservationRepository;
-import com.github.Ksionzka.persistence.repository.UserRepository;
+import com.github.Ksionzka.persistence.repository.UserRepositoryOLD;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,7 +45,7 @@ class ReservationControllerTest {
     private ReservationRepository reservationRepository;
 
     @MockBean
-    private UserRepository userRepository;
+    private UserRepositoryOLD userRepository;
 
     /**
      * Method under test: {@link ReservationController#createReservation(CreateReservationRequest)}
@@ -98,7 +98,7 @@ class ReservationControllerTest {
         userEntity1.setId(123L);
         userEntity1.setPassword("iloveyou");
         userEntity1.setRole("Role");
-        UserRepository userRepository = mock(UserRepository.class);
+        UserRepositoryOLD userRepository = mock(UserRepositoryOLD.class);
         when(userRepository.getOrThrowById((Long) any())).thenReturn(userEntity1);
         ReservationController reservationController = new ReservationController(reservationRepository, bookRepository,
                 userRepository);
@@ -157,7 +157,7 @@ class ReservationControllerTest {
         bookEntity1.setRelease(releaseEntity1);
         BookRepository bookRepository = mock(BookRepository.class);
         when(bookRepository.getOrThrowById((String) any())).thenReturn(bookEntity1);
-        UserRepository userRepository = mock(UserRepository.class);
+        UserRepositoryOLD userRepository = mock(UserRepositoryOLD.class);
         when(userRepository.getOrThrowById((Long) any())).thenThrow(new IllegalArgumentException());
         ReservationController reservationController = new ReservationController(reservationRepository, bookRepository,
                 userRepository);

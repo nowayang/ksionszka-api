@@ -1,16 +1,11 @@
 package com.github.Ksionzka.controller;
 
-import com.github.Ksionzka.controller.dto.CreateReleaseRequest;
 import com.github.Ksionzka.controller.dto.CreateReservationRequest;
-import com.github.Ksionzka.persistence.entity.BookEntity;
-import com.github.Ksionzka.persistence.entity.ReleaseEntity;
 import com.github.Ksionzka.persistence.entity.ReservationEntity;
 import com.github.Ksionzka.persistence.repository.BookRepository;
-import com.github.Ksionzka.persistence.repository.ReleaseRepository;
 import com.github.Ksionzka.persistence.repository.ReservationRepository;
-import com.github.Ksionzka.persistence.repository.UserRepository;
+import com.github.Ksionzka.persistence.repository.UserRepositoryOLD;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -25,7 +20,7 @@ import java.time.ZonedDateTime;
 public class ReservationController implements BaseController<ReservationEntity, String> {
     private final ReservationRepository reservationRepository;
     private final BookRepository bookRepository;
-    private final UserRepository userRepository;
+    private final UserRepositoryOLD userRepository;
 
     @Override
     @GetMapping
