@@ -23,17 +23,17 @@ public class ReservationController implements BaseController<ReservationEntity, 
     private final UserRepository userRepository;
 
     @Override
-    @GetMapping
+    @GetMapping()
     @Transactional(readOnly = true)
-    public Page<ReservationEntity> findAll(Pageable pageable, @PathVariable String search) {
+    public Page<ReservationEntity> findAll(Pageable pageable, @RequestParam String search) {
         final String searchTerm = this.getSearchTerm(search);
         return this.reservationRepository.findAll(
             (Specification<ReservationEntity>)
                 (root, cq, cb) -> cb.or(
                     cb.like(cb.lower(root.get("user").get("email")), searchTerm),
-                    cb.like(cb.lower(root.get("book").get("publisher")), searchTerm),
-                    cb.like(cb.lower(root.get("book").get("author")), searchTerm),
-                    cb.like(cb.lower(root.get("book").get("genre")), searchTerm)
+                    cb.like(cb.lower(root.get("book").get("release").get("publisher")), searchTerm),
+                    cb.like(cb.lower(root.get("book").get("release").get("author")), searchTerm),
+                    cb.like(cb.lower(root.get("book").get("release").get("genre")), searchTerm)
                 ),
             pageable
         );
@@ -43,7 +43,7 @@ public class ReservationController implements BaseController<ReservationEntity, 
     @GetMapping("/{id}")
     @Transactional(readOnly = true)
     public ReservationEntity getById(@PathVariable String id) {
-        return this.reservationRepository.getOrThrowById(id);
+        return this.reservationRepository.getOrThrowById(Long.valueOf(id));
     }
 
     @PostMapping
@@ -60,8 +60,9 @@ public class ReservationController implements BaseController<ReservationEntity, 
     }
 
     @Override
+    @DeleteMapping("/{id}")
     @Transactional
-    public void deleteById(String id) {
-        this.reservationRepository.deleteById(id);
+    public void deleteById(@PathVariable String id) {
+        this.reservationRepository.deleteById(Long.valueOf(id));
     }
 }

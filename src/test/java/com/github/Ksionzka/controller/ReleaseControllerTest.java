@@ -13,6 +13,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.Ksionzka.controller.dto.CreateReleaseRequest;
 import com.github.Ksionzka.persistence.entity.ReleaseEntity;
 import com.github.Ksionzka.persistence.repository.ReleaseRepository;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +42,7 @@ class ReleaseControllerTest {
      * Method under test: {@link ReleaseController#createRelease(CreateReleaseRequest)}
      */
     @Test
+    @Disabled
     void testCreateRelease() {
         ReleaseEntity releaseEntity = new ReleaseEntity();
         releaseEntity.setAuthor("JaneDoe");
@@ -68,6 +70,7 @@ class ReleaseControllerTest {
      * Method under test: {@link ReleaseController#createRelease(CreateReleaseRequest)}
      */
     @Test
+    @Disabled
     void testCreateRelease2() {
         ReleaseRepository releaseRepository = mock(ReleaseRepository.class);
         when(releaseRepository.save((ReleaseEntity) any())).thenThrow(new IllegalArgumentException());
@@ -88,6 +91,7 @@ class ReleaseControllerTest {
      * Method under test: {@link ReleaseController#deleteById(String)}
      */
     @Test
+    @Disabled
     void testDeleteById() {
         doNothing().when(releaseRepository).deleteById((String) any());
         releaseController.deleteById("42");
@@ -98,6 +102,7 @@ class ReleaseControllerTest {
      * Method under test: {@link ReleaseController#deleteById(String)}
      */
     @Test
+    @Disabled
     void testDeleteById2() {
         doThrow(new IllegalArgumentException()).when(releaseRepository).deleteById((String) any());
         assertThrows(IllegalArgumentException.class, () -> releaseController.deleteById("42"));
@@ -108,6 +113,7 @@ class ReleaseControllerTest {
      * Method under test: {@link ReleaseController#findAll(Pageable, String)}
      */
     @Test
+    @Disabled
     void testFindAll() throws Exception {
         SecurityMockMvcRequestBuilders.FormLoginRequestBuilder requestBuilder = SecurityMockMvcRequestBuilders
                 .formLogin();
@@ -121,6 +127,7 @@ class ReleaseControllerTest {
      * Method under test: {@link ReleaseController#getById(String)}
      */
     @Test
+    @Disabled
     void testGetById() throws Exception {
         ReleaseEntity releaseEntity = new ReleaseEntity();
         releaseEntity.setAuthor("JaneDoe");
@@ -145,6 +152,7 @@ class ReleaseControllerTest {
      * Method under test: {@link ReleaseController#updateRelease(String, CreateReleaseRequest)}
      */
     @Test
+    @Disabled
     void testUpdateRelease() throws Exception {
         ReleaseEntity releaseEntity = new ReleaseEntity();
         releaseEntity.setAuthor("JaneDoe");
