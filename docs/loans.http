@@ -13,7 +13,6 @@ Accept: application/json
 
 {
     "loanDate": "",
-    "actualReturnDate": "",
     "returnDate": "",
     "userId": "",
     "bookId": ""

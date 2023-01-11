@@ -8,21 +8,22 @@ import javax.persistence.*;
 import java.time.ZonedDateTime;
 
 @Entity
-
 @NoArgsConstructor
 @Getter
 @Setter
-public class ReservationEntity {
+public class LoanEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String id;
 
     @Column(nullable = false)
-    private ZonedDateTime creationDate;
+    private ZonedDateTime loanDate;
 
     @Column(nullable = false)
-    private ZonedDateTime reservationDate;
+    private ZonedDateTime returnDate;
+
+    @Column
+    private ZonedDateTime actualReturnDate;
 
     @ManyToOne
     @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)
