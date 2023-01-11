@@ -1,5 +1,6 @@
 package com.github.Ksionzka.persistence.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.github.Ksionzka.security.Role;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -26,6 +27,7 @@ public class UserEntity implements UserDetails {
     private String firstName;
     private String lastName;
     private String email;
+    @JsonIgnore
     private String password;
     @Enumerated(EnumType.STRING)
     private Role role;
