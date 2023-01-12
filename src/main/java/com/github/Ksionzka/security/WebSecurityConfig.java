@@ -1,56 +1,50 @@
 package com.github.Ksionzka.security;
 
+import com.github.Ksionzka.security.jwt.JwtAuthenticationEntryPoint;
+import com.github.Ksionzka.security.jwt.JwtRequestFilter;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
-@AllArgsConstructor
-@EnableWebSecurity
-public class WebSecurityConfig {
+@RequiredArgsConstructor
+public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+    private final AuthenticationProvider authenticationProvider;
+    private final JwtRequestFilter jwtRequestFilter;
+    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 
-//	@Bean
-//	public InMemoryUserDetailsManager userDetailsService(PasswordEncoder passwordEncoder) {
-//		UserDetails user = User.withUsername("user")
-//				.password(passwordEncoder.encode("password"))
-//				.roles("USER")
-//				.build();
-//
-//		UserDetails admin = User.withUsername("admin")
-//				.password(passwordEncoder.encode("admin"))
-//				.roles("USER", "ADMIN")
-//				.build();
-//
-//		return new InMemoryUserDetailsManager(user, admin);
-//	}
+    @Override
+    protected void configure(AuthenticationManagerBuilder auth) {
+        auth.authenticationProvider(this.authenticationProvider);
+    }
 
-	@Bean
-	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-		http.authorizeRequests()
-				.antMatchers("/api/register/**").permitAll()
-//				.antMatchers("/h2/**").hasRole("ADMIN")
-				.antMatchers("/h2/**").permitAll()
-				.anyRequest().authenticated()
-				.and()
-				.csrf().disable()
-				.headers().frameOptions().disable()
-				.and()
-				.httpBasic();
-		return http.build();
-	}
-
-	@Bean
-	public PasswordEncoder passwordEncoder() {
-		PasswordEncoder encoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
-		return encoder;
-	}
+    @Override
+    protected void configure(HttpSecurity httpSecurity) throws Exception {
+        httpSecurity
+            .addFilterBefore(this.jwtRequestFilter, UsernamePasswordAuthenticationFilter.class)
+            .csrf().disable()
+            .cors().disable()
+            .authorizeRequests()
+            .antMatchers("/api/register", "/api/login").permitAll()
+            .antMatchers("/h2/**").permitAll()
+            .anyRequest().authenticated()
+            .and()
+            .exceptionHandling().authenticationEntryPoint(this.jwtAuthenticationEntryPoint)
+            .and()
+            .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+    }
 }

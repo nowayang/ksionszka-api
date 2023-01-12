@@ -1,10 +1,12 @@
 package com.github.Ksionzka.security;
 
+import com.github.Ksionzka.exception.RestException;
 import com.github.Ksionzka.persistence.entity.UserEntity;
 import com.github.Ksionzka.persistence.repository.UserRepository;
 import com.github.Ksionzka.security.registration.token.ConfirmationToken;
 import com.github.Ksionzka.security.registration.token.ConfirmationTokenService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -28,7 +30,7 @@ public class AppUserService implements UserDetailsService {
     private ConfirmationTokenService tokenService;
 
     @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+    public UserEntity loadUserByUsername(String email) throws UsernameNotFoundException {
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException(String.format(USER_NOT_FOUND, email)));
     }
@@ -38,7 +40,7 @@ public class AppUserService implements UserDetailsService {
         boolean present = userRepository.findByEmail(user.getEmail()).isPresent();
 
         if (present) {
-            throw new IllegalStateException("Email is already in use");
+            throw RestException.of(HttpStatus.BAD_REQUEST, "Email is already in use");
         }
 
         String encodedPassword = passwordEncoder.encode(user.getPassword());
