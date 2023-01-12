@@ -31,7 +31,11 @@ public class UserEntity implements UserDetails {
     private String password;
     @Enumerated(EnumType.STRING)
     private Role role;
+
+    @JsonIgnore
     private Boolean locked = false;
+
+    @JsonIgnore
     private Boolean enabled = false;
 
     public UserEntity(String firstName, String lastName, String email, String password, Role role) {
@@ -59,21 +63,25 @@ public class UserEntity implements UserDetails {
     }
 
     @Override
+    @JsonIgnore
     public boolean isAccountNonExpired() {
         return true;
     }
 
     @Override
+    @JsonIgnore
     public boolean isAccountNonLocked() {
         return !locked;
     }
 
     @Override
+    @JsonIgnore
     public boolean isCredentialsNonExpired() {
         return true;
     }
 
     @Override
+    @JsonIgnore
     public boolean isEnabled() {
         return enabled;
     }

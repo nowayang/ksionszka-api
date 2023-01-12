@@ -17,6 +17,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.time.ZonedDateTime;
 
 @RestController
@@ -59,7 +60,7 @@ public class UserController implements BaseController<UserEntity, Long> {
 
     @PostMapping("/{id}/change-password")
     @Transactional
-    public UserEntity changePasswordById(@PathVariable Long id, @RequestBody ChangePasswordRequest request) {
+    public UserEntity changePasswordById(@PathVariable Long id, @Valid @RequestBody ChangePasswordRequest request) {
         UserEntity userEntity = this.userRepository.getOrThrowById(id);
 
         if (!this.passwordEncoder.matches(request.getPassword(), userEntity.getPassword())) {

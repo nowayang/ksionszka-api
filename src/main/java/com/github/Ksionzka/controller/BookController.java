@@ -13,6 +13,8 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+
 @RestController
 @RequestMapping("/api/books")
 @RequiredArgsConstructor
@@ -47,7 +49,7 @@ public class BookController implements BaseController<BookEntity, String> {
 
     @PostMapping
     @Transactional
-    public BookEntity createBook(@RequestBody CreateBookRequest request) {
+    public BookEntity createBook(@Valid @RequestBody CreateBookRequest request) {
         BookEntity bookEntity = new BookEntity();
 
         bookEntity.setId(request.getPhysicalId());
@@ -59,7 +61,7 @@ public class BookController implements BaseController<BookEntity, String> {
 
     @PutMapping("/{id}")
     @Transactional
-    public BookEntity updateBook(@PathVariable String id, @RequestBody UpdateBookRequest request) {
+    public BookEntity updateBook(@PathVariable String id, @Valid @RequestBody UpdateBookRequest request) {
         return this.bookRepository
             .findById(id)
             .map(bookEntity -> {

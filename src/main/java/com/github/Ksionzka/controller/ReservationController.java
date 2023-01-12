@@ -16,6 +16,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.time.ZonedDateTime;
 
 @RestController
@@ -53,7 +54,7 @@ public class ReservationController implements BaseController<ReservationEntity, 
 
     @PostMapping
     @Transactional
-    public ReservationEntity createReservation(@RequestBody CreateReservationRequest request) {
+    public ReservationEntity createReservation(@Valid @RequestBody CreateReservationRequest request) {
         ReservationEntity reservationEntity = new ReservationEntity();
 
         reservationEntity.setBook(this.bookRepository.getOrThrowById(request.getBookId()));

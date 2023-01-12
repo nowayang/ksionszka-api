@@ -15,6 +15,8 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
@@ -52,7 +54,7 @@ public class LoanController implements BaseController<LoanEntity, Long> {
 
     @PostMapping
     @Transactional
-    public LoanEntity createLoan(@RequestBody CreateLoanRequest createLoanRequest) {
+    public LoanEntity createLoan(@Valid @RequestBody CreateLoanRequest createLoanRequest) {
         LoanEntity loanEntity = new LoanEntity();
         loanEntity.setUser(this.userRepository.getOrThrowById(createLoanRequest.getUserId()));
         loanEntity.setBook(this.bookRepository.getOrThrowById(createLoanRequest.getBookId()));
@@ -72,7 +74,8 @@ public class LoanController implements BaseController<LoanEntity, Long> {
 
     @PostMapping("/{id}/extend")
     @Transactional
-    public LoanEntity extendLoan(@PathVariable Long id, @RequestBody ZonedDateTime returnDate) {
+    public LoanEntity extendLoan(@PathVariable Long id,
+                                 @Valid @NotNull(message = "Return date must not be null") @RequestBody ZonedDateTime returnDate) {
         LoanEntity loanEntity = this.loanRepository.getOrThrowById(id);
         loanEntity.setReturnDate(returnDate);
         return this.loanRepository.save(loanEntity);

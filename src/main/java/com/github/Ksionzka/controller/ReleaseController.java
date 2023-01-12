@@ -11,6 +11,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.time.ZonedDateTime;
 
 @RestController
@@ -45,7 +46,7 @@ public class ReleaseController implements BaseController<ReleaseEntity, String> 
 
     @PostMapping
     @Transactional
-    public ReleaseEntity createRelease(@RequestBody CreateReleaseRequest request) {
+    public ReleaseEntity createRelease(@Valid  @RequestBody CreateReleaseRequest request) {
         ReleaseEntity releaseEntity = new ReleaseEntity();
         BeanUtils.copyProperties(request, releaseEntity);
         return this.releaseRepository.save(releaseEntity);
@@ -53,7 +54,7 @@ public class ReleaseController implements BaseController<ReleaseEntity, String> 
 
     @PutMapping("/{id}")
     @Transactional
-    public ReleaseEntity updateRelease(@PathVariable String id, @RequestBody CreateReleaseRequest request) {
+    public ReleaseEntity updateRelease(@PathVariable String id, @Valid @RequestBody CreateReleaseRequest request) {
         ReleaseEntity releaseEntity = this.getById(id);
         BeanUtils.copyProperties(request, releaseEntity);
         return this.releaseRepository.save(releaseEntity);
