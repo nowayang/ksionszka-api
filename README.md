@@ -61,3 +61,7 @@ tworzymy taki plik i odpalamy w przeglądarce
 </html>
 ```
 
+#### Dokumentacja
+```
+http://localhost:8080/swagger-ui/index.html
+```
