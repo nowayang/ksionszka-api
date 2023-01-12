@@ -7,8 +7,12 @@ import com.github.Ksionzka.persistence.repository.ReservationRepository;
 import com.github.Ksionzka.persistence.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,6 +25,7 @@ public class ReservationController implements BaseController<ReservationEntity, 
     private final ReservationRepository reservationRepository;
     private final BookRepository bookRepository;
     private final UserRepository userRepository;
+    private final SimpMessagingTemplate simpMessagingTemplate;
 
     @Override
     @GetMapping()
@@ -64,5 +69,14 @@ public class ReservationController implements BaseController<ReservationEntity, 
     @Transactional
     public void deleteById(@PathVariable String id) {
         this.reservationRepository.deleteById(Long.valueOf(id));
+    }
+
+    @Scheduled(fixedRate = 15000)
+    public void sendRecentReservations() {
+        simpMessagingTemplate.convertAndSend("/topic/recent-reservations",
+                reservationRepository.findAll(
+                        PageRequest.of(0, 10, Sort.by(Sort.Direction.DESC, "creationDate"))
+                ).getContent()
+        );
     }
 }
