@@ -2,6 +2,7 @@ package com.github.Ksionzka.controller;
 
 import com.github.Ksionzka.controller.dto.CreateBookRequest;
 import com.github.Ksionzka.controller.dto.UpdateBookRequest;
+import com.github.Ksionzka.exception.RestException;
 import com.github.Ksionzka.persistence.entity.BookEntity;
 import com.github.Ksionzka.persistence.entity.Genre;
 import com.github.Ksionzka.persistence.repository.BookRepository;
@@ -12,6 +13,7 @@ import org.apache.logging.log4j.util.Strings;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -105,6 +107,11 @@ public class BookController implements BaseController<BookEntity, Long> {
     @Secured("ROLE_LIBRARIAN")
     public BookEntity createBook(@Valid @RequestBody CreateBookRequest request) {
         BookEntity bookEntity = new BookEntity();
+
+        if (this.bookRepository.exists((root, cq, cb) -> cb.equal(root.get("number"), request.getNumber()))) {
+            throw RestException.of(HttpStatus.BAD_REQUEST, "Book number exists");
+        }
+
         bookEntity.setNumber(request.getNumber());
         bookEntity.setRelease(this.releaseRepository.getOrThrowById(request.getReleaseId()));
 
@@ -116,6 +123,12 @@ public class BookController implements BaseController<BookEntity, Long> {
     @Secured("ROLE_LIBRARIAN")
     public BookEntity updateBook(@PathVariable Long id, @Valid @RequestBody UpdateBookRequest request) {
         BookEntity bookEntity = this.bookRepository.getOrThrowById(id);
+
+        if (!Objects.equals(bookEntity.getNumber(), request.getNumber())
+            && this.bookRepository.exists((root, cq, cb) -> cb.equal(root.get("number"), request.getNumber()))) {
+            throw RestException.of(HttpStatus.BAD_REQUEST, "Book number exists");
+        }
+
         bookEntity.setNumber(request.getNumber());
         bookEntity.setRelease(this.releaseRepository.getOrThrowById(request.getReleaseId()));
         return this.bookRepository.save(bookEntity);
