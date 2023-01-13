@@ -16,4 +16,8 @@ public class LoanSpecifications {
     public static Specification<LoanEntity> isDelayed() {
         return (root, cq, cb) -> cb.greaterThanOrEqualTo(root.get("loanDate"), ZonedDateTime.now());
     }
+
+    public static Specification<LoanEntity> isReturned() {
+        return (root, cq, cb) -> cb.isNotNull(root.get("actualReturnDate"));
+    }
 }
