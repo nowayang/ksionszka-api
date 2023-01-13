@@ -9,6 +9,7 @@ import com.github.Ksionzka.persistence.repository.ReleaseRepository;
 import com.github.Ksionzka.persistence.repository.UserRepository;
 import com.github.Ksionzka.security.AppUserService;
 import lombok.RequiredArgsConstructor;
+import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -30,17 +31,20 @@ public class UserController implements BaseController<UserEntity, Long> {
     @Override
     @GetMapping
     @Transactional(readOnly = true)
-    public Page<UserEntity> findAll(Pageable pageable, @RequestParam String search) {
+    public Page<UserEntity> findAll(Pageable pageable, @RequestParam(required = false) String search) {
         final String searchTerm = this.getSearchTerm(search);
-        return this.userRepository.findAll(
-            (Specification<UserEntity>)
-                (root, cq, cb) -> cb.or(
-                    cb.like(cb.lower(root.get("firstName")), searchTerm),
-                    cb.like(cb.lower(root.get("lastName")), searchTerm),
-                    cb.like(cb.lower(root.get("email")), searchTerm)
-                ),
-            pageable
-        );
+
+        Specification<UserEntity> specification = Specification.where(null);
+
+        if (Strings.isNotBlank(search)) {
+            specification = specification.and((root, cq, cb) -> cb.or(
+                cb.like(cb.lower(root.get("firstName")), searchTerm),
+                cb.like(cb.lower(root.get("lastName")), searchTerm),
+                cb.like(cb.lower(root.get("email")), searchTerm)
+            ));
+        }
+
+        return this.userRepository.findAll(specification, pageable);
     }
 
     @Override
