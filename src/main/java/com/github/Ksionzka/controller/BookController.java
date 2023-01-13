@@ -3,10 +3,9 @@ package com.github.Ksionzka.controller;
 import com.github.Ksionzka.controller.dto.CreateBookRequest;
 import com.github.Ksionzka.controller.dto.UpdateBookRequest;
 import com.github.Ksionzka.persistence.entity.BookEntity;
-import com.github.Ksionzka.persistence.entity.LoanEntity;
-import com.github.Ksionzka.persistence.entity.ReleaseEntity;
 import com.github.Ksionzka.persistence.repository.BookRepository;
 import com.github.Ksionzka.persistence.repository.ReleaseRepository;
+import com.github.Ksionzka.persistence.specification.BookSpecifications;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.data.domain.Page;
@@ -16,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/api/books")
@@ -26,7 +26,7 @@ public class BookController implements BaseController<BookEntity, String> {
 
     @Override
     public Page<BookEntity> findAll(Pageable pageable, String search) {
-        return this.findAll(pageable, search, null, null, null);
+        return this.findAll(pageable, search, null, null, null, null, null);
     }
 
     @GetMapping
@@ -35,7 +35,9 @@ public class BookController implements BaseController<BookEntity, String> {
                                     @RequestParam(required = false) String search,
                                     @RequestParam(required = false) String bookNameLike,
                                     @RequestParam(required = false) String authorLike,
-                                    @RequestParam(required = false) String releaseIdLike) {
+                                    @RequestParam(required = false) String releaseIdLike,
+                                    @RequestParam(required = false) Boolean loaned,
+                                    @RequestParam(required = false) Boolean reserved) {
         final String searchTerm = this.getSearchTerm(search);
         Specification<BookEntity> specification = Specification.where(null);
 
@@ -62,6 +64,16 @@ public class BookController implements BaseController<BookEntity, String> {
         if (Strings.isNotBlank(releaseIdLike)) {
             specification = specification.and((root, cq, cb) -> cb.like(
                 cb.lower(root.get("release").get("id")), this.getSearchTerm(releaseIdLike)));
+        }
+
+        if (Objects.nonNull(loaned)) {
+            Specification<BookEntity> isLoanedSpecification = BookSpecifications.isLoaned();
+            specification = specification.and(loaned ? isLoanedSpecification : Specification.not(isLoanedSpecification));
+        }
+
+        if (Objects.nonNull(reserved)) {
+            Specification<BookEntity> isReservedSpecification = BookSpecifications.isReserved();
+            specification = specification.and(reserved ? isReservedSpecification : Specification.not(isReservedSpecification));
         }
 
         return this.bookRepository.findAll(specification, pageable);
