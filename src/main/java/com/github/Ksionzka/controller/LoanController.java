@@ -81,6 +81,15 @@ public class LoanController implements BaseController<LoanEntity, Long> {
         return this.loanRepository.findAll(specification, pageable);
     }
 
+    @GetMapping("/users/{userId}")
+    @Transactional(readOnly = true)
+    public Page<LoanEntity> findUserLoans(Pageable pageable, @PathVariable Long userId) {
+        return this.loanRepository.findAll(
+            (root, cq, cb) -> cb.equal(root.get("user").get("id"), userId),
+            pageable
+        );
+    }
+
     @Override
     @GetMapping("/{id}")
     @Transactional(readOnly = true)
