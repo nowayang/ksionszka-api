@@ -19,4 +19,9 @@ public interface UserRepository extends BaseRepository<UserEntity, Long> {
     @Query("UPDATE UserEntity a " +
             "SET a.enabled = TRUE WHERE a.email = ?1")
     int enableAppUser(String email);
+
+    @Override
+    default String getTypeReadableName() {
+        return "User";
+    }
 }

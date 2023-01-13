@@ -11,6 +11,8 @@ import org.apache.logging.log4j.util.Strings;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
@@ -99,6 +101,7 @@ public class BookController implements BaseController<BookEntity, String> {
 
     @PostMapping
     @Transactional
+    @Secured("ROLE_LIBRARIAN")
     public BookEntity createBook(@Valid @RequestBody CreateBookRequest request) {
         BookEntity bookEntity = new BookEntity();
 
@@ -111,6 +114,7 @@ public class BookController implements BaseController<BookEntity, String> {
 
     @PutMapping("/{id}")
     @Transactional
+    @Secured("ROLE_LIBRARIAN")
     public BookEntity updateBook(@PathVariable String id, @Valid @RequestBody UpdateBookRequest request) {
         return this.bookRepository
             .findById(id)
@@ -125,6 +129,7 @@ public class BookController implements BaseController<BookEntity, String> {
     @Override
     @DeleteMapping("/{id}")
     @Transactional
+    @Secured("ROLE_LIBRARIAN")
     public void deleteById(@PathVariable String id) {
         this.bookRepository.deleteById(id);
     }

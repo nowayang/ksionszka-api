@@ -1,25 +1,21 @@
 package com.github.Ksionzka.controller;
 
-import com.github.Ksionzka.controller.dto.*;
-import com.github.Ksionzka.persistence.entity.BookEntity;
-import com.github.Ksionzka.persistence.entity.ReservationEntity;
+import com.github.Ksionzka.controller.dto.ChangePasswordRequest;
+import com.github.Ksionzka.controller.dto.UpdateUserRequest;
 import com.github.Ksionzka.persistence.entity.UserEntity;
-import com.github.Ksionzka.persistence.repository.BookRepository;
-import com.github.Ksionzka.persistence.repository.ReleaseRepository;
 import com.github.Ksionzka.persistence.repository.UserRepository;
-import com.github.Ksionzka.security.AppUserService;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.time.ZonedDateTime;
 
 @RestController
 @RequestMapping("/api/users")
@@ -78,6 +74,7 @@ public class UserController implements BaseController<UserEntity, Long> {
     @Override
     @DeleteMapping("/{id}")
     @Transactional
+    @Secured("ROLE_LIBRARIAN")
     public void deleteById(@PathVariable Long id) {
         this.userRepository.deleteById(id);
     }

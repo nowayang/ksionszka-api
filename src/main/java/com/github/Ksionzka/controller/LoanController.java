@@ -16,6 +16,7 @@ import org.apache.logging.log4j.util.Strings;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
@@ -98,6 +99,7 @@ public class LoanController implements BaseController<LoanEntity, Long> {
 
     @PostMapping("/{id}/extend")
     @Transactional
+    @Secured("ROLE_LIBRARIAN")
     public LoanEntity extendLoan(@PathVariable Long id) {
         LoanEntity loanEntity = this.loanRepository.getOrThrowById(id);
 
@@ -120,6 +122,7 @@ public class LoanController implements BaseController<LoanEntity, Long> {
     @Override
     @DeleteMapping("/{id}")
     @Transactional
+    @Secured("ROLE_LIBRARIAN")
     public void deleteById(@PathVariable Long id) {
         this.loanRepository.deleteById(Long.valueOf(id));
     }

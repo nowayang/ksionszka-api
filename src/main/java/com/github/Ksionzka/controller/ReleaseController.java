@@ -10,6 +10,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
@@ -51,6 +52,7 @@ public class ReleaseController implements BaseController<ReleaseEntity, String> 
 
     @PostMapping
     @Transactional
+    @Secured("ROLE_LIBRARIAN")
     public ReleaseEntity createRelease(@Valid  @RequestBody CreateReleaseRequest request) {
         ReleaseEntity releaseEntity = new ReleaseEntity();
         BeanUtils.copyProperties(request, releaseEntity);
@@ -59,6 +61,7 @@ public class ReleaseController implements BaseController<ReleaseEntity, String> 
 
     @PutMapping("/{id}")
     @Transactional
+    @Secured("ROLE_LIBRARIAN")
     public ReleaseEntity updateRelease(@PathVariable String id, @Valid @RequestBody CreateReleaseRequest request) {
         ReleaseEntity releaseEntity = this.getById(id);
         BeanUtils.copyProperties(request, releaseEntity);
@@ -68,6 +71,7 @@ public class ReleaseController implements BaseController<ReleaseEntity, String> 
     @Override
     @DeleteMapping("/{id}")
     @Transactional
+    @Secured("ROLE_LIBRARIAN")
     public void deleteById(@PathVariable String id) {
         this.releaseRepository.deleteById(id);
     }
