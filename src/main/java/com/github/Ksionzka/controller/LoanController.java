@@ -126,11 +126,11 @@ public class LoanController implements BaseController<LoanEntity, Long> {
     public LoanEntity extendLoan(@PathVariable Long id) {
         LoanEntity loanEntity = this.loanRepository.getOrThrowById(id);
 
-        if (!this.loanRepository.exists(id, LoanSpecifications.isDelayed())) {
+        if (this.loanRepository.exists(id, LoanSpecifications.isDelayed())) {
             throw RestException.of(HttpStatus.BAD_REQUEST, "Cannot extend delayed loan");
         }
 
-        if (!this.loanRepository.exists(id, (root, cq, cb) -> cb.isNotNull(root.get("actualReturnDate")))) {
+        if (this.loanRepository.exists(id, (root, cq, cb) -> cb.isNotNull(root.get("actualReturnDate")))) {
             throw RestException.of(HttpStatus.BAD_REQUEST, "Cannot extend returned loan");
         }
 
@@ -150,15 +150,15 @@ public class LoanController implements BaseController<LoanEntity, Long> {
     public LoanEntity requestReturnDateExtension(@PathVariable Long id) {
         LoanEntity loanEntity = this.loanRepository.getOrThrowById(id);
 
-        if (!this.loanRepository.exists(id, (root, cq, cb) -> cb.isNotNull(root.get("requestedReturnDateExtensionAt")))) {
+        if (this.loanRepository.exists(id, (root, cq, cb) -> cb.isNotNull(root.get("requestedReturnDateExtensionAt")))) {
             throw RestException.of(HttpStatus.BAD_REQUEST, "Loan is already requested to extend");
         }
 
-        if (!this.loanRepository.exists(id, LoanSpecifications.isDelayed())) {
+        if (this.loanRepository.exists(id, LoanSpecifications.isDelayed())) {
             throw RestException.of(HttpStatus.BAD_REQUEST, "Cannot extend delayed loan");
         }
 
-        if (!this.loanRepository.exists(id, (root, cq, cb) -> cb.isNotNull(root.get("actualReturnDate")))) {
+        if (this.loanRepository.exists(id, (root, cq, cb) -> cb.isNotNull(root.get("actualReturnDate")))) {
             throw RestException.of(HttpStatus.BAD_REQUEST, "Cannot extend returned loan");
         }
 
