@@ -14,6 +14,9 @@ public class CreateReleaseRequest {
     @NotNull(message = "ID must not be null")
     private String id;
 
+    @NotBlank(message = "Name must not be blank")
+    private String title;
+
     @NotBlank(message = "Publisher must not be blank")
     private String publisher;
 

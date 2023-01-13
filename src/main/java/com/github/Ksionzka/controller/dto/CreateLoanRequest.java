@@ -2,7 +2,6 @@ package com.github.Ksionzka.controller.dto;
 
 import lombok.Data;
 
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.time.ZonedDateTime;
 
@@ -15,9 +14,9 @@ public class CreateLoanRequest {
     @NotNull(message = "Return date must not be null")
     private ZonedDateTime returnDate;
 
-    @NotNull(message = "User ID must not be null")
-    private Long userId;
+    @NotNull(message = "Username must not be blank")
+    private String username;
 
     @NotNull(message = "Book ID must not be null")
-    private String bookId;
+    private Long bookId;
 }

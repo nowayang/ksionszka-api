@@ -34,6 +34,7 @@ public class ReleaseController implements BaseController<ReleaseEntity, String> 
         if (Strings.isNotBlank(search)) {
             specification = specification.and((root, cq, cb) -> cb.or(
                 cb.like(cb.lower(root.get("id")), searchTerm),
+                cb.like(cb.lower(root.get("title")), searchTerm),
                 cb.like(cb.lower(root.get("publisher")), searchTerm),
                 cb.like(cb.lower(root.get("author")), searchTerm),
                 cb.like(cb.lower(root.get("genre").as(String.class)), searchTerm)

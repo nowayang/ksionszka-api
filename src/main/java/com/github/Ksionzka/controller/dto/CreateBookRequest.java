@@ -11,9 +11,6 @@ public class CreateBookRequest {
     @NotNull(message = "Release ID must not be null")
     private String releaseId;
 
-    @NotBlank(message = "Name must not be blank")
-    private String name;
-
-    @NotNull(message = "Physical ID must not be null")
-    private String physicalId;
+    @NotBlank(message = "Number must not be blank")
+    private String number;
 }

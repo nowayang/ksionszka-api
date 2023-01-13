@@ -13,7 +13,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,7 +22,7 @@ import java.util.Objects;
 @RestController
 @RequestMapping("/api/books")
 @RequiredArgsConstructor
-public class BookController implements BaseController<BookEntity, String> {
+public class BookController implements BaseController<BookEntity, Long> {
     private final BookRepository bookRepository;
     private final ReleaseRepository releaseRepository;
 
@@ -37,7 +36,7 @@ public class BookController implements BaseController<BookEntity, String> {
     @Transactional(readOnly = true)
     public Page<BookEntity> findAll(Pageable pageable,
                                     @RequestParam(required = false) String search,
-                                    @RequestParam(required = false) String bookNameLike,
+                                    @RequestParam(required = false) String releaseTitleLike,
                                     @RequestParam(required = false) String authorLike,
                                     @RequestParam(required = false) String releaseIdLike,
                                     @RequestParam(required = false) Boolean loaned,
@@ -49,17 +48,18 @@ public class BookController implements BaseController<BookEntity, String> {
 
         if (Strings.isNotBlank(search)) {
             specification = specification.and((root, cq, cb) -> cb.or(
-                cb.like(cb.lower(root.get("id")), searchTerm),
+                cb.like(cb.lower(root.get("number")), searchTerm),
                 cb.like(cb.lower(root.get("release").get("id")), searchTerm),
+                cb.like(cb.lower(root.get("release").get("title")), searchTerm),
                 cb.like(cb.lower(root.get("release").get("publisher")), searchTerm),
                 cb.like(cb.lower(root.get("release").get("author")), searchTerm),
                 cb.like(cb.lower(root.get("release").get("genre").as(String.class)), searchTerm)
             ));
         }
 
-        if (Strings.isNotBlank(bookNameLike)) {
+        if (Strings.isNotBlank(releaseTitleLike)) {
             specification = specification.and((root, cq, cb) -> cb.like(
-                cb.lower(root.get("name")), this.getSearchTerm(bookNameLike)));
+                cb.lower(root.get("release").get("title")), this.getSearchTerm(releaseTitleLike)));
         }
 
         if (Strings.isNotBlank(authorLike)) {
@@ -96,7 +96,7 @@ public class BookController implements BaseController<BookEntity, String> {
     @Override
     @GetMapping("/{id}")
     @Transactional(readOnly = true)
-    public BookEntity getById(@PathVariable String id) {
+    public BookEntity getById(@PathVariable Long id) {
         return this.bookRepository.getOrThrowById(id);
     }
 
@@ -105,9 +105,7 @@ public class BookController implements BaseController<BookEntity, String> {
     @Secured("ROLE_LIBRARIAN")
     public BookEntity createBook(@Valid @RequestBody CreateBookRequest request) {
         BookEntity bookEntity = new BookEntity();
-
-        bookEntity.setId(request.getPhysicalId());
-        bookEntity.setName(request.getName());
+        bookEntity.setNumber(request.getNumber());
         bookEntity.setRelease(this.releaseRepository.getOrThrowById(request.getReleaseId()));
 
         return this.bookRepository.save(bookEntity);
@@ -116,22 +114,18 @@ public class BookController implements BaseController<BookEntity, String> {
     @PutMapping("/{id}")
     @Transactional
     @Secured("ROLE_LIBRARIAN")
-    public BookEntity updateBook(@PathVariable String id, @Valid @RequestBody UpdateBookRequest request) {
-        return this.bookRepository
-            .findById(id)
-            .map(bookEntity -> {
-                bookEntity.setName(request.getName());
-                bookEntity.setRelease(this.releaseRepository.getOrThrowById(request.getReleaseId()));
-                return this.bookRepository.save(bookEntity);
-            })
-            .orElseThrow(() -> new RuntimeException("NOT_FOUND"));
+    public BookEntity updateBook(@PathVariable Long id, @Valid @RequestBody UpdateBookRequest request) {
+        BookEntity bookEntity = this.bookRepository.getOrThrowById(id);
+        bookEntity.setNumber(request.getNumber());
+        bookEntity.setRelease(this.releaseRepository.getOrThrowById(request.getReleaseId()));
+        return this.bookRepository.save(bookEntity);
     }
 
     @Override
     @DeleteMapping("/{id}")
     @Transactional
     @Secured("ROLE_LIBRARIAN")
-    public void deleteById(@PathVariable String id) {
+    public void deleteById(@PathVariable Long id) {
         this.bookRepository.deleteById(id);
     }
 }

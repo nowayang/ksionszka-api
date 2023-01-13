@@ -2,7 +2,6 @@ package com.github.Ksionzka.controller.dto;
 
 import lombok.Data;
 
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 @Data
@@ -12,5 +11,5 @@ public class CreateReservationRequest {
     private Long userId;
 
     @NotNull(message = "Book ID must not be null")
-    private String bookId;
+    private Long bookId;
 }

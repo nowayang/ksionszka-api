@@ -55,24 +55,21 @@ public class Bootstrap {
         releaseEntity.setLanguage("pl");
         releaseEntity.setId(id);
         releaseEntity.setGenre(genre);
+        releaseEntity.setTitle(bookName);
 
-        if (this.releaseRepository.existsById(releaseEntity.getId())) {
+        if (!this.releaseRepository.existsById(releaseEntity.getId())) {
             ReleaseEntity entity = this.releaseRepository.saveAndFlush(releaseEntity);
 
             for (String bookId : booksId) {
-                this.addBook(bookId,  bookName, entity);
+                this.addBook(bookId, entity);
             }
         }
     }
 
-    void addBook(String id, String name, ReleaseEntity releaseEntity) {
+    void addBook(String number, ReleaseEntity releaseEntity) {
         BookEntity bookEntity = new BookEntity();
         bookEntity.setRelease(releaseEntity);
-        bookEntity.setId(id);
-        bookEntity.setName(name);
-
-        if (this.bookRepository.existsById(bookEntity.getId())) {
-            this.bookRepository.saveAndFlush(bookEntity);
-        }
+        bookEntity.setNumber(number);
+        this.bookRepository.save(bookEntity);
     }
 }

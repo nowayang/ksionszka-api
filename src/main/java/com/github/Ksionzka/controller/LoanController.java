@@ -2,6 +2,7 @@ package com.github.Ksionzka.controller;
 
 import com.github.Ksionzka.controller.dto.CreateLoanRequest;
 import com.github.Ksionzka.controller.dto.CreateReservationRequest;
+import com.github.Ksionzka.exception.RestException;
 import com.github.Ksionzka.persistence.entity.LoanEntity;
 import com.github.Ksionzka.persistence.entity.ReservationEntity;
 import com.github.Ksionzka.persistence.entity.UserEntity;
@@ -16,6 +17,7 @@ import org.apache.logging.log4j.util.Strings;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -45,6 +47,8 @@ public class LoanController implements BaseController<LoanEntity, Long> {
         if (Strings.isNotBlank(search)) {
             specification = specification.and((root, cq, cb) -> cb.or(
                 cb.like(cb.lower(root.get("user").get("email")), searchTerm),
+                cb.like(cb.lower(root.get("book").get("number")), searchTerm),
+                cb.like(cb.lower(root.get("book").get("release").get("title")), searchTerm),
                 cb.like(cb.lower(root.get("book").get("release").get("publisher")), searchTerm),
                 cb.like(cb.lower(root.get("book").get("release").get("author")), searchTerm),
                 cb.like(cb.lower(root.get("book").get("release").get("genre").as(String.class)), searchTerm)
@@ -79,7 +83,12 @@ public class LoanController implements BaseController<LoanEntity, Long> {
     @Transactional
     public LoanEntity createLoan(@Valid @RequestBody CreateLoanRequest createLoanRequest) {
         LoanEntity loanEntity = new LoanEntity();
-        loanEntity.setUser(this.userRepository.getOrThrowById(createLoanRequest.getUserId()));
+
+        loanEntity.setUser(
+            this.userRepository.findByEmail(createLoanRequest.getUsername())
+                .orElseThrow(() -> RestException.of(HttpStatus.BAD_REQUEST, "User with email not exists"))
+        );
+
         loanEntity.setBook(this.bookRepository.getOrThrowById(createLoanRequest.getBookId()));
         loanEntity.setLoanDate(createLoanRequest.getLoanDate());
         loanEntity.setReturnDate(createLoanRequest.getReturnDate());

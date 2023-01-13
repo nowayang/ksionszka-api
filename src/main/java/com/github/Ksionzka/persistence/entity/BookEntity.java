@@ -13,10 +13,11 @@ import javax.persistence.*;
 public class BookEntity {
 
     @Id
-    private String id;
+    @GeneratedValue
+    private Long id;
 
     @Column(columnDefinition = "varchar(255) not null")
-    private String name;
+    private String number;
 
     @ManyToOne
     @JoinColumn(referencedColumnName = "id", nullable = false)

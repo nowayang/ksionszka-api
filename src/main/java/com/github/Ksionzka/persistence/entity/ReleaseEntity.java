@@ -20,6 +20,9 @@ public class ReleaseEntity {
     private String id;
 
     @Column(columnDefinition = "varchar(255) not null")
+    private String title;
+
+    @Column(columnDefinition = "varchar(255) not null")
     private String publisher;
 
     @Column(nullable = false)
