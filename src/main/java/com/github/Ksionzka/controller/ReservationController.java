@@ -35,17 +35,9 @@ public class ReservationController implements BaseController<ReservationEntity, 
     private final SecurityContextMediator securityContextMediator;
 
     @Override
-    public Page<ReservationEntity> findAll(Pageable pageable, String search) {
-        return this.findAll(pageable, search, null, null, null);
-    }
-
     @GetMapping()
     @Transactional(readOnly = true)
-    public Page<ReservationEntity> findAll(Pageable pageable,
-                                           @RequestParam(required = false) String search,
-                                           @RequestParam(required = false) String bookNameLike,
-                                           @RequestParam(required = false) String authorLike,
-                                           @RequestParam(required = false) String releaseIdLike) {
+    public Page<ReservationEntity> findAll(Pageable pageable, @RequestParam(required = false) String search) {
         final String searchTerm = this.getSearchTerm(search);
 
         Specification<ReservationEntity> specification = Specification.where(null);
@@ -57,21 +49,6 @@ public class ReservationController implements BaseController<ReservationEntity, 
                 cb.like(cb.lower(root.get("book").get("release").get("author")), searchTerm),
                 cb.like(cb.lower(root.get("book").get("release").get("genre")), searchTerm)
             ));
-        }
-
-        if (Strings.isNotBlank(bookNameLike)) {
-            specification = specification.and((root, cq, cb) -> cb.like(
-                cb.lower(root.get("book").get("name")), this.getSearchTerm(bookNameLike)));
-        }
-
-        if (Strings.isNotBlank(authorLike)) {
-            specification = specification.and((root, cq, cb) -> cb.like(
-                cb.lower(root.get("book").get("release").get("author")), this.getSearchTerm(authorLike)));
-        }
-
-        if (Strings.isNotBlank(releaseIdLike)) {
-            specification = specification.and((root, cq, cb) -> cb.like(
-                cb.lower(root.get("book").get("release").get("id")), this.getSearchTerm(releaseIdLike)));
         }
 
         UserEntity currentUser = this.securityContextMediator.getCurrentUser();
