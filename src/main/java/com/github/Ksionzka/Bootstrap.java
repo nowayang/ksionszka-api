@@ -10,10 +10,12 @@ import com.github.Ksionzka.persistence.repository.UserRepository;
 import com.github.Ksionzka.security.Role;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
 import java.time.LocalDate;
+import java.util.List;
 
 @Component
 @RequiredArgsConstructor
@@ -25,51 +27,52 @@ public class Bootstrap {
     @PostConstruct
     @Transactional
     void bootstrapData() {
-        if (this.addAdminUser()) {
-            this.addReleases();
-            this.addBook();
+        this.addUser(new UserEntity("admin", "admin", "admin@admin", "admin", Role.LIBRARIAN));
+        this.addUser(new UserEntity("Karol", "Nowacki", "karol.nowacki@gmail.com", "password", Role.LIBRARIAN));
+        this.addUser(new UserEntity("Andrzej", "Nowak", "andrze.nowak@gmail.com", "password", Role.USER));
+        this.addUser(new UserEntity("Władysław", "Mol", "władek2137@gmail.com", "password", Role.USER));
 
-            //todo 2 users
-            //todo 2 releases
-            //todo 3 books
+        this.addRelease("978-3-16-148410-0", "J.K. Rowling", "Rich publisher",
+            Genre.Fantastyka, LocalDate.now(), List.of("001/15/2012", "002/15/2012", "003/15/2012"), "Morze czerwone");
+        this.addRelease("378-3-16-148410-1", "W. Romtz", "Google", Genre.Fantastyka,
+            LocalDate.now().minusDays(5), List.of("001/04/2022", "002/04/2022", "003/04/2022"), "Jak obniżyć libido");
+        this.addRelease("978-3-16-148410-2", "M. Mertz", "V Dynamics", Genre.Fantastyka,
+            LocalDate.now().minusYears(2), List.of("001/04/2018", "002/04/2018", "003/04/2018"), "W pustyni i w puszczy");
 
-        }
     }
 
-    private boolean addAdminUser() {
-        UserEntity userEntity = new UserEntity(
-            "admin",
-            "admin",
-            "admin@admin",
-            "admin",
-            Role.LIBRARIAN
-        );
-
+    void addUser(UserEntity userEntity) {
         if (this.userRepository.findByEmail(userEntity.getEmail()).isEmpty()) {
-            this.userRepository.save(userEntity);
-
-            return true;
-        } else {
-            return false;
+            this.userRepository.saveAndFlush(userEntity);
         }
     }
 
-    private void addReleases() {
+    void addRelease(String id, String author, String publisher, Genre genre, LocalDate releaseDate, List<String> booksId, String bookName) {
         ReleaseEntity releaseEntity = new ReleaseEntity();
-        releaseEntity.setReleaseDate(LocalDate.now());
-        releaseEntity.setAuthor("J.K. Rowling");
-        releaseEntity.setPublisher("Rich publisher");
+        releaseEntity.setReleaseDate(releaseDate);
+        releaseEntity.setAuthor(author);
+        releaseEntity.setPublisher(publisher);
         releaseEntity.setLanguage("pl");
-        releaseEntity.setId("978-3-16-148410-0");
-        releaseEntity.setGenre(Genre.Fantastyka);
-        this.releaseRepository.save(releaseEntity);
+        releaseEntity.setId(id);
+        releaseEntity.setGenre(genre);
+
+        if (this.releaseRepository.existsById(releaseEntity.getId())) {
+            ReleaseEntity entity = this.releaseRepository.saveAndFlush(releaseEntity);
+
+            for (String bookId : booksId) {
+                this.addBook(bookId,  bookName, entity);
+            }
+        }
     }
 
-    private void addBook() {
+    void addBook(String id, String name, ReleaseEntity releaseEntity) {
         BookEntity bookEntity = new BookEntity();
-        bookEntity.setRelease(this.releaseRepository.getOrThrowById("978-3-16-148410-0"));
-        bookEntity.setId("001/15/2016");
-        bookEntity.setName("W pustyni i w puszczy");
-        this.bookRepository.save(bookEntity);
+        bookEntity.setRelease(releaseEntity);
+        bookEntity.setId(id);
+        bookEntity.setName(name);
+
+        if (this.bookRepository.existsById(bookEntity.getId())) {
+            this.bookRepository.saveAndFlush(bookEntity);
+        }
     }
 }
