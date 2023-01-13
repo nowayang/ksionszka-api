@@ -56,7 +56,7 @@ class BookControllerTest {
     void testCreateBook() {
         ReleaseEntity releaseEntity = new ReleaseEntity();
         releaseEntity.setAuthor("JaneDoe");
-        releaseEntity.setDate(null);
+        releaseEntity.setReleaseDate(null);
         releaseEntity.setGenre("Genre");
         releaseEntity.setId("42");
         releaseEntity.setLanguage("en");
@@ -70,7 +70,7 @@ class BookControllerTest {
 
         ReleaseEntity releaseEntity1 = new ReleaseEntity();
         releaseEntity1.setAuthor("JaneDoe");
-        releaseEntity1.setDate(null);
+        releaseEntity1.setReleaseDate(null);
         releaseEntity1.setGenre("Genre");
         releaseEntity1.setId("42");
         releaseEntity1.setLanguage("en");
@@ -95,7 +95,7 @@ class BookControllerTest {
     void testCreateBook2() {
         ReleaseEntity releaseEntity = new ReleaseEntity();
         releaseEntity.setAuthor("JaneDoe");
-        releaseEntity.setDate(null);
+        releaseEntity.setReleaseDate(null);
         releaseEntity.setGenre("Genre");
         releaseEntity.setId("42");
         releaseEntity.setLanguage("en");
@@ -161,7 +161,7 @@ class BookControllerTest {
     void testGetById() throws Exception {
         ReleaseEntity releaseEntity = new ReleaseEntity();
         releaseEntity.setAuthor("JaneDoe");
-        releaseEntity.setDate(null);
+        releaseEntity.setReleaseDate(null);
         releaseEntity.setGenre("Genre");
         releaseEntity.setId("42");
         releaseEntity.setLanguage("en");
@@ -191,7 +191,7 @@ class BookControllerTest {
     void testUpdateBook() throws Exception {
         ReleaseEntity releaseEntity = new ReleaseEntity();
         releaseEntity.setAuthor("JaneDoe");
-        releaseEntity.setDate(null);
+        releaseEntity.setReleaseDate(null);
         releaseEntity.setGenre("Genre");
         releaseEntity.setId("42");
         releaseEntity.setLanguage("en");
@@ -204,7 +204,7 @@ class BookControllerTest {
 
         ReleaseEntity releaseEntity1 = new ReleaseEntity();
         releaseEntity1.setAuthor("JaneDoe");
-        releaseEntity1.setDate(null);
+        releaseEntity1.setReleaseDate(null);
         releaseEntity1.setGenre("Genre");
         releaseEntity1.setId("42");
         releaseEntity1.setLanguage("en");
@@ -218,7 +218,7 @@ class BookControllerTest {
 
         ReleaseEntity releaseEntity2 = new ReleaseEntity();
         releaseEntity2.setAuthor("JaneDoe");
-        releaseEntity2.setDate(null);
+        releaseEntity2.setReleaseDate(null);
         releaseEntity2.setGenre("Genre");
         releaseEntity2.setId("42");
         releaseEntity2.setLanguage("en");

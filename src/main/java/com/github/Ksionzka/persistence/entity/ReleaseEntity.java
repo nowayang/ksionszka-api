@@ -3,6 +3,7 @@ package com.github.Ksionzka.persistence.entity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.Formula;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -22,7 +23,10 @@ public class ReleaseEntity {
     private String publisher;
 
     @Column(nullable = false)
-    private LocalDate date;
+    private LocalDate releaseDate;
+
+    @Formula("extract(year from date)")
+    private Long releaseYear;
 
     @Column(columnDefinition = "varchar(255) not null")
     private String author;

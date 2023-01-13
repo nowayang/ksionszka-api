@@ -46,7 +46,7 @@ class ReleaseControllerTest {
     void testCreateRelease() {
         ReleaseEntity releaseEntity = new ReleaseEntity();
         releaseEntity.setAuthor("JaneDoe");
-        releaseEntity.setDate(null);
+        releaseEntity.setReleaseDate(null);
         releaseEntity.setGenre("Genre");
         releaseEntity.setId("42");
         releaseEntity.setLanguage("en");
@@ -57,7 +57,7 @@ class ReleaseControllerTest {
 
         CreateReleaseRequest createReleaseRequest = new CreateReleaseRequest();
         createReleaseRequest.setAuthor("JaneDoe");
-        createReleaseRequest.setDate(null);
+        createReleaseRequest.setReleaseDate(null);
         createReleaseRequest.setGenre("Genre");
         createReleaseRequest.setId("42");
         createReleaseRequest.setLanguage("en");
@@ -78,7 +78,7 @@ class ReleaseControllerTest {
 
         CreateReleaseRequest createReleaseRequest = new CreateReleaseRequest();
         createReleaseRequest.setAuthor("JaneDoe");
-        createReleaseRequest.setDate(null);
+        createReleaseRequest.setReleaseDate(null);
         createReleaseRequest.setGenre("Genre");
         createReleaseRequest.setId("42");
         createReleaseRequest.setLanguage("en");
@@ -131,7 +131,7 @@ class ReleaseControllerTest {
     void testGetById() throws Exception {
         ReleaseEntity releaseEntity = new ReleaseEntity();
         releaseEntity.setAuthor("JaneDoe");
-        releaseEntity.setDate(null);
+        releaseEntity.setReleaseDate(null);
         releaseEntity.setGenre("Genre");
         releaseEntity.setId("42");
         releaseEntity.setLanguage("en");
@@ -156,7 +156,7 @@ class ReleaseControllerTest {
     void testUpdateRelease() throws Exception {
         ReleaseEntity releaseEntity = new ReleaseEntity();
         releaseEntity.setAuthor("JaneDoe");
-        releaseEntity.setDate(null);
+        releaseEntity.setReleaseDate(null);
         releaseEntity.setGenre("Genre");
         releaseEntity.setId("42");
         releaseEntity.setLanguage("en");
@@ -164,7 +164,7 @@ class ReleaseControllerTest {
 
         ReleaseEntity releaseEntity1 = new ReleaseEntity();
         releaseEntity1.setAuthor("JaneDoe");
-        releaseEntity1.setDate(null);
+        releaseEntity1.setReleaseDate(null);
         releaseEntity1.setGenre("Genre");
         releaseEntity1.setId("42");
         releaseEntity1.setLanguage("en");
@@ -174,7 +174,7 @@ class ReleaseControllerTest {
 
         CreateReleaseRequest createReleaseRequest = new CreateReleaseRequest();
         createReleaseRequest.setAuthor("JaneDoe");
-        createReleaseRequest.setDate(null);
+        createReleaseRequest.setReleaseDate(null);
         createReleaseRequest.setGenre("Genre");
         createReleaseRequest.setId("42");
         createReleaseRequest.setLanguage("en");

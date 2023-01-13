@@ -16,8 +16,8 @@ public class CreateReleaseRequest {
     @NotBlank(message = "Publisher must not be blank")
     private String publisher;
 
-    @NotNull(message = "Date must not be null")
-    private LocalDate date;
+    @NotNull(message = "Release date must not be null")
+    private LocalDate releaseDate;
 
     @NotBlank(message = "Author must not be blank")
     private String author;
