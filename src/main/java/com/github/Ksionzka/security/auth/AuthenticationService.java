@@ -7,6 +7,7 @@ import com.github.Ksionzka.security.jwt.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -31,6 +32,8 @@ public class AuthenticationService {
             SecurityContextHolder
                 .getContext()
                 .setAuthentication(this.authenticationProvider.authenticate(credentials));
+        } catch (DisabledException ex) {
+            throw RestException.of(HttpStatus.UNAUTHORIZED, "Confirm email");
         } catch (AuthenticationException ex) {
             throw RestException.of(HttpStatus.BAD_REQUEST, "Bad credentials");
         }
