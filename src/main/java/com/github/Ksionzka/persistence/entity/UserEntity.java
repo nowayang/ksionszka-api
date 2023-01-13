@@ -11,6 +11,8 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+import java.time.ZonedDateTime;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -38,12 +40,15 @@ public class UserEntity implements UserDetails {
     @JsonIgnore
     private Boolean enabled = false;
 
+    private ZonedDateTime createdAt;
+
     public UserEntity(String firstName, String lastName, String email, String password, Role role) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.password = password;
         this.role = role;
+        this.createdAt = ZonedDateTime.now();
     }
 
     @Override
