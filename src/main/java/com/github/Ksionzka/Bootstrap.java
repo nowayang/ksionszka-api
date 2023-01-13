@@ -28,6 +28,11 @@ public class Bootstrap {
         if (this.addAdminUser()) {
             this.addReleases();
             this.addBook();
+
+            //todo 2 users
+            //todo 2 releases
+            //todo 3 books
+
         }
     }
 

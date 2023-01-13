@@ -1,5 +1,6 @@
 package com.github.Ksionzka.security.registration;
 
+import com.github.Ksionzka.exception.RestException;
 import com.github.Ksionzka.persistence.entity.UserEntity;
 import com.github.Ksionzka.security.AppUserService;
 import com.github.Ksionzka.security.Role;
@@ -7,6 +8,7 @@ import com.github.Ksionzka.security.email.EmailSender;
 import com.github.Ksionzka.security.registration.token.ConfirmationToken;
 import com.github.Ksionzka.security.registration.token.ConfirmationTokenService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -30,7 +32,7 @@ public class RegistrationService {
     public String register(RegistrationRequest request) {
 
         if (!emailValidator.test(request.getEmail())) {
-            throw new IllegalStateException("Email is not valid.");
+            throw RestException.of(HttpStatus.BAD_REQUEST, "Email is not valid");
         }
         String token = appUserService.signUpUser(
                 new UserEntity(
@@ -51,17 +53,16 @@ public class RegistrationService {
     public String confirmToken(String token) {
         ConfirmationToken confirmationToken = tokenService
                 .getToken(token)
-                .orElseThrow(() ->
-                        new IllegalStateException("token not found"));
+                .orElseThrow(() -> RestException.of(HttpStatus.BAD_REQUEST, "Token not found"));
 
         if (confirmationToken.getConfirmedAt() != null) {
-            throw new IllegalStateException("email already confirmed");
+            throw RestException.of(HttpStatus.BAD_REQUEST, "Email already confirmed");
         }
 
         LocalDateTime expiredAt = confirmationToken.getExpiresAt();
 
         if (expiredAt.isBefore(LocalDateTime.now())) {
-            throw new IllegalStateException("token expired");
+            throw RestException.of(HttpStatus.BAD_REQUEST, "Token expired");
         }
 
         tokenService.setConfirmedAt(token);

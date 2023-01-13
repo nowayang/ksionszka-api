@@ -1,7 +1,9 @@
 package com.github.Ksionzka.security.email;
 
+import com.github.Ksionzka.exception.RestException;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
@@ -30,7 +32,7 @@ public class EmailService implements EmailSender{
             mailSender.send(mimeMessage);
         } catch (MessagingException e) {
             log.error("Failed to send email", e);
-            throw new IllegalStateException("failed to send email");
+            throw RestException.of(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to send confirmation email");
         }
     }
 }
