@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 import java.time.ZonedDateTime;
 
 @Entity
@@ -21,7 +22,7 @@ public class ReleaseEntity {
     private String publisher;
 
     @Column(nullable = false)
-    private ZonedDateTime date;
+    private LocalDate date;
 
     @Column(columnDefinition = "varchar(255) not null")
     private String author;

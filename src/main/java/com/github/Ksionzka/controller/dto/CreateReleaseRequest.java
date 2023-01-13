@@ -4,6 +4,7 @@ import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.time.LocalDate;
 import java.time.ZonedDateTime;
 
 @Data
@@ -15,8 +16,8 @@ public class CreateReleaseRequest {
     @NotBlank(message = "Publisher must not be blank")
     private String publisher;
 
-    @NotNull(message = "User ID must not be null")
-    private ZonedDateTime date;
+    @NotNull(message = "Date must not be null")
+    private LocalDate date;
 
     @NotBlank(message = "Author must not be blank")
     private String author;
