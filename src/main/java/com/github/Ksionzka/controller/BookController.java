@@ -44,7 +44,7 @@ public class BookController implements BaseController<BookEntity, Long> {
                                     @RequestParam(required = false) Boolean loaned,
                                     @RequestParam(required = false) Boolean reserved,
                                     @RequestParam(required = false) Genre genre,
-                                    @RequestParam(required = false) Long releaseYear) {
+                                    @RequestParam(required = false) String releaseYear) {
         final String searchTerm = this.getSearchTerm(search);
         Specification<BookEntity> specification = Specification.where(null);
 
@@ -88,8 +88,9 @@ public class BookController implements BaseController<BookEntity, Long> {
             specification = specification.and((root, cq, cb) -> cb.equal(root.get("release").get("genre"), genre));
         }
 
-        if (Objects.nonNull(releaseYear)) {
-            specification = specification.and((root, cq, cb) -> cb.equal(root.get("release").get("releaseYear"), genre));
+        if (Strings.isNotBlank(releaseYear)) {
+            specification = specification.and((root, cq, cb) -> cb.like(
+                cb.lower(root.get("release").get("releaseYear").as(String.class)), this.getSearchTerm(releaseYear)));
         }
 
         return this.bookRepository.findAll(specification, pageable);
