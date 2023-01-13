@@ -23,6 +23,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/loans")
@@ -113,16 +114,29 @@ public class LoanController implements BaseController<LoanEntity, Long> {
     @Transactional
     public LoanEntity returnLoan(@PathVariable Long id) {
         LoanEntity loanEntity = this.loanRepository.getOrThrowById(id);
+
+        //todo nie mozna oddac oddanej ksiazki
         loanEntity.setActualReturnDate(ZonedDateTime.now());
         return this.loanRepository.save(loanEntity);
     }
 
     @PostMapping("/{id}/extend")
     @Transactional
-    public LoanEntity extendLoan(@PathVariable Long id,
-                                 @Valid @NotNull(message = "Return date must not be null") @RequestBody ZonedDateTime returnDate) {
+    public LoanEntity extendLoan(@PathVariable Long id) {
         LoanEntity loanEntity = this.loanRepository.getOrThrowById(id);
-        loanEntity.setReturnDate(returnDate);
+
+        //todo nie mozna przedluzyc spoznionej ksiązki
+        loanEntity.setReturnDate(Optional.ofNullable(loanEntity.getReturnDate()).orElse(ZonedDateTime.now()).plusWeeks(1));
+        return this.loanRepository.save(loanEntity);
+    }
+
+    @PostMapping("/{id}/request-extension")
+    @Transactional
+    public LoanEntity requestReturnDateExtension(@PathVariable Long id) {
+        LoanEntity loanEntity = this.loanRepository.getOrThrowById(id);
+
+        //todo nie można zrequestować oddanej książki i spoznionej ksiązki
+        loanEntity.setRequestedReturnDateExtension(true);
         return this.loanRepository.save(loanEntity);
     }
 
