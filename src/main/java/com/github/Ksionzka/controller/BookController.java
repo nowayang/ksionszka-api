@@ -3,10 +3,12 @@ package com.github.Ksionzka.controller;
 import com.github.Ksionzka.controller.dto.CreateBookRequest;
 import com.github.Ksionzka.controller.dto.UpdateBookRequest;
 import com.github.Ksionzka.persistence.entity.BookEntity;
+import com.github.Ksionzka.persistence.entity.LoanEntity;
 import com.github.Ksionzka.persistence.entity.ReleaseEntity;
 import com.github.Ksionzka.persistence.repository.BookRepository;
 import com.github.Ksionzka.persistence.repository.ReleaseRepository;
 import lombok.RequiredArgsConstructor;
+import org.apache.logging.log4j.util.Strings;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -23,21 +25,46 @@ public class BookController implements BaseController<BookEntity, String> {
     private final ReleaseRepository releaseRepository;
 
     @Override
+    public Page<BookEntity> findAll(Pageable pageable, String search) {
+        return this.findAll(pageable, search, null, null, null);
+    }
+
     @GetMapping
     @Transactional(readOnly = true)
-    public Page<BookEntity> findAll(Pageable pageable, @RequestParam String search) {
+    public Page<BookEntity> findAll(Pageable pageable,
+                                    @RequestParam(required = false) String search,
+                                    @RequestParam(required = false) String bookNameLike,
+                                    @RequestParam(required = false) String authorLike,
+                                    @RequestParam(required = false) String releaseIdLike) {
         final String searchTerm = this.getSearchTerm(search);
-        return this.bookRepository.findAll(
-            (Specification<BookEntity>)
-                (root, cq, cb) -> cb.or(
-                    cb.like(cb.lower(root.get("id")), searchTerm),
-                    cb.like(cb.lower(root.get("release").get("id")), searchTerm),
-                    cb.like(cb.lower(root.get("release").get("publisher")), searchTerm),
-                    cb.like(cb.lower(root.get("release").get("author")), searchTerm),
-                    cb.like(cb.lower(root.get("release").get("genre")), searchTerm)
-                ),
-            pageable
-        );
+        Specification<BookEntity> specification = Specification.where(null);
+
+        if (Strings.isNotBlank(search)) {
+            specification = specification.and((root, cq, cb) -> cb.or(
+                cb.like(cb.lower(root.get("id")), searchTerm),
+                cb.like(cb.lower(root.get("release").get("id")), searchTerm),
+                cb.like(cb.lower(root.get("release").get("publisher")), searchTerm),
+                cb.like(cb.lower(root.get("release").get("author")), searchTerm),
+                cb.like(cb.lower(root.get("release").get("genre")), searchTerm)
+            ));
+        }
+
+        if (Strings.isNotBlank(bookNameLike)) {
+            specification = specification.and((root, cq, cb) -> cb.like(
+                cb.lower(root.get("name")), this.getSearchTerm(bookNameLike)));
+        }
+
+        if (Strings.isNotBlank(authorLike)) {
+            specification = specification.and((root, cq, cb) -> cb.like(
+                cb.lower(root.get("release").get("author")), this.getSearchTerm(authorLike)));
+        }
+
+        if (Strings.isNotBlank(releaseIdLike)) {
+            specification = specification.and((root, cq, cb) -> cb.like(
+                cb.lower(root.get("release").get("id")), this.getSearchTerm(releaseIdLike)));
+        }
+
+        return this.bookRepository.findAll(specification, pageable);
     }
 
     @Override
