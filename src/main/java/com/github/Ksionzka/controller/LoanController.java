@@ -1,7 +1,6 @@
 package com.github.Ksionzka.controller;
 
 import com.github.Ksionzka.controller.dto.CreateLoanRequest;
-import com.github.Ksionzka.controller.dto.CreateReservationRequest;
 import com.github.Ksionzka.exception.RestException;
 import com.github.Ksionzka.persistence.entity.LoanEntity;
 import com.github.Ksionzka.persistence.entity.ReservationEntity;
@@ -10,6 +9,8 @@ import com.github.Ksionzka.persistence.repository.BookRepository;
 import com.github.Ksionzka.persistence.repository.LoanRepository;
 import com.github.Ksionzka.persistence.repository.ReservationRepository;
 import com.github.Ksionzka.persistence.repository.UserRepository;
+import com.github.Ksionzka.persistence.specification.BookSpecifications;
+import com.github.Ksionzka.persistence.specification.LoanSpecifications;
 import com.github.Ksionzka.security.Role;
 import com.github.Ksionzka.security.SecurityContextMediator;
 import lombok.RequiredArgsConstructor;
@@ -23,8 +24,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Optional;
 
@@ -36,6 +35,7 @@ public class LoanController implements BaseController<LoanEntity, Long> {
     private final BookRepository bookRepository;
     private final UserRepository userRepository;
     private final SecurityContextMediator securityContextMediator;
+    private final ReservationRepository reservationRepository;
 
     @GetMapping()
     @Transactional(readOnly = true)
@@ -81,17 +81,28 @@ public class LoanController implements BaseController<LoanEntity, Long> {
 
     @PostMapping
     @Transactional
+    @Secured("ROLE_LIBRARIAN")
     public LoanEntity createLoan(@Valid @RequestBody CreateLoanRequest createLoanRequest) {
         LoanEntity loanEntity = new LoanEntity();
 
         loanEntity.setUser(
-            this.userRepository.findByEmail(createLoanRequest.getUsername())
+            this.userRepository
+                .findByEmail(createLoanRequest.getUsername())
                 .orElseThrow(() -> RestException.of(HttpStatus.BAD_REQUEST, "User with email not exists"))
         );
 
+        if (this.bookRepository.exists(createLoanRequest.getBookId(), BookSpecifications.isLoaned())) {
+            throw RestException.of(HttpStatus.BAD_REQUEST, "Book is loaned or reserved");
+        }
+
         loanEntity.setBook(this.bookRepository.getOrThrowById(createLoanRequest.getBookId()));
-        loanEntity.setLoanDate(createLoanRequest.getLoanDate());
-        loanEntity.setReturnDate(createLoanRequest.getReturnDate());
+        loanEntity.setLoanDate(ZonedDateTime.now());
+        loanEntity.setReturnDate(ZonedDateTime.now().plusWeeks(1));
+
+        this.reservationRepository.deleteAll(
+            this.reservationRepository.findAll((root, cq, cb) -> cb.equal(
+                root.get("book").get("id"), createLoanRequest.getBookId()))
+        );
 
         return this.loanRepository.save(loanEntity);
     }
@@ -101,7 +112,10 @@ public class LoanController implements BaseController<LoanEntity, Long> {
     public LoanEntity returnLoan(@PathVariable Long id) {
         LoanEntity loanEntity = this.loanRepository.getOrThrowById(id);
 
-        //todo nie mozna oddac oddanej ksiazki
+        if (!this.bookRepository.exists(id, BookSpecifications.isLoaned())) {
+            throw RestException.of(HttpStatus.BAD_REQUEST, "Book is already returned");
+        }
+
         loanEntity.setActualReturnDate(ZonedDateTime.now());
         return this.loanRepository.save(loanEntity);
     }
@@ -112,9 +126,22 @@ public class LoanController implements BaseController<LoanEntity, Long> {
     public LoanEntity extendLoan(@PathVariable Long id) {
         LoanEntity loanEntity = this.loanRepository.getOrThrowById(id);
 
-        //todo nie mozna przedluzyc spoznionej ksiązki
-        ZonedDateTime dateTime = Optional.ofNullable(loanEntity.getRequestedReturnDateExtensionAt()).orElse(ZonedDateTime.now());
-        loanEntity.setReturnDate(dateTime.plusWeeks(1));
+        if (!this.loanRepository.exists(id, LoanSpecifications.isDelayed())) {
+            throw RestException.of(HttpStatus.BAD_REQUEST, "Cannot extend delayed loan");
+        }
+
+        if (!this.loanRepository.exists(id, (root, cq, cb) -> cb.isNotNull(root.get("actualReturnDate")))) {
+            throw RestException.of(HttpStatus.BAD_REQUEST, "Cannot extend returned loan");
+        }
+
+        Optional.ofNullable(loanEntity.getRequestedReturnDateExtensionAt()).ifPresentOrElse(
+            date -> {
+                loanEntity.setRequestedReturnDateExtensionAt(null);
+                loanEntity.setReturnDate(date.plusWeeks(1));
+            },
+            () -> loanEntity.setReturnDate(ZonedDateTime.now().plusWeeks(1))
+        );
+
         return this.loanRepository.save(loanEntity);
     }
 
@@ -123,7 +150,18 @@ public class LoanController implements BaseController<LoanEntity, Long> {
     public LoanEntity requestReturnDateExtension(@PathVariable Long id) {
         LoanEntity loanEntity = this.loanRepository.getOrThrowById(id);
 
-        //todo nie można zrequestować oddanej książki i spoznionej ksiązki
+        if (!this.loanRepository.exists(id, (root, cq, cb) -> cb.isNotNull(root.get("requestedReturnDateExtensionAt")))) {
+            throw RestException.of(HttpStatus.BAD_REQUEST, "Loan is already requested to extend");
+        }
+
+        if (!this.loanRepository.exists(id, LoanSpecifications.isDelayed())) {
+            throw RestException.of(HttpStatus.BAD_REQUEST, "Cannot extend delayed loan");
+        }
+
+        if (!this.loanRepository.exists(id, (root, cq, cb) -> cb.isNotNull(root.get("actualReturnDate")))) {
+            throw RestException.of(HttpStatus.BAD_REQUEST, "Cannot extend returned loan");
+        }
+
         loanEntity.setRequestedReturnDateExtensionAt(ZonedDateTime.now());
         return this.loanRepository.save(loanEntity);
     }

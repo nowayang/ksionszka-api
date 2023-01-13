@@ -14,7 +14,8 @@ import java.time.ZonedDateTime;
 public class LoanEntity {
 
     @Id
-    private String id;
+    @GeneratedValue
+    private Long id;
 
     @Column(nullable = false)
     private ZonedDateTime loanDate;
