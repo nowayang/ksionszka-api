@@ -159,7 +159,7 @@ public class LoanController implements BaseController<LoanEntity, Long> {
             throw RestException.of(HttpStatus.BAD_REQUEST, "Cannot extend delayed loan");
         }
 
-        if (this.loanRepository.exists(id, (root, cq, cb) -> cb.isNotNull(root.get("actualReturnDate")))) {
+        if (this.loanRepository.exists(id, LoanSpecifications.isReturned())) {
             throw RestException.of(HttpStatus.BAD_REQUEST, "Cannot extend returned loan");
         }
 
@@ -168,7 +168,7 @@ public class LoanController implements BaseController<LoanEntity, Long> {
                 loanEntity.setRequestedReturnDateExtensionAt(null);
                 loanEntity.setReturnDate(date.plusWeeks(1));
             },
-            () -> loanEntity.setReturnDate(ZonedDateTime.now().plusWeeks(1))
+            () -> loanEntity.setReturnDate(loanEntity.getReturnDate().plusWeeks(1))
         );
 
         return this.loanRepository.save(loanEntity);
