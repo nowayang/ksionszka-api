@@ -36,10 +36,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
             .addFilterBefore(this.jwtRequestFilter, UsernamePasswordAuthenticationFilter.class)
-            .csrf().disable()
+            .csrf().disable().headers().frameOptions().disable()
+            .and()
             .cors().disable()
             .authorizeRequests()
-            .antMatchers("/api/register", "/api/login").permitAll()
+            .antMatchers("/api/register", "/api/register/confirm", "/api/login").permitAll()
             .antMatchers("/", "/csrf", "/v2/api-docs", "/swagger-resources/configuration/ui", "/configuration/ui",
                 "/swagger-resources", "/swagger-resources/configuration/security", "/configuration/security", "/swagger-ui.html",
                 "/webjars/**", "/swagger-ui/**")
