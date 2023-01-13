@@ -25,7 +25,7 @@ public class ReleaseEntity {
     @Column(nullable = false)
     private LocalDate releaseDate;
 
-    @Formula("extract(year from date)")
+    @Formula("extract(year from release_date)")
     private Long releaseYear;
 
     @Column(columnDefinition = "varchar(255) not null")
@@ -34,6 +34,7 @@ public class ReleaseEntity {
     @Column(columnDefinition = "varchar(255) not null")
     private String language;
 
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private Genre genre;
 }
