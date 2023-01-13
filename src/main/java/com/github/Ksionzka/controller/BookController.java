@@ -26,7 +26,7 @@ public class BookController implements BaseController<BookEntity, String> {
 
     @Override
     public Page<BookEntity> findAll(Pageable pageable, String search) {
-        return this.findAll(pageable, search, null, null, null, null, null);
+        return this.findAll(pageable, search, null, null, null, null, null, null);
     }
 
     @GetMapping
@@ -37,7 +37,8 @@ public class BookController implements BaseController<BookEntity, String> {
                                     @RequestParam(required = false) String authorLike,
                                     @RequestParam(required = false) String releaseIdLike,
                                     @RequestParam(required = false) Boolean loaned,
-                                    @RequestParam(required = false) Boolean reserved) {
+                                    @RequestParam(required = false) Boolean reserved,
+                                    @RequestParam(required = false) String genre) {
         final String searchTerm = this.getSearchTerm(search);
         Specification<BookEntity> specification = Specification.where(null);
 
@@ -74,6 +75,10 @@ public class BookController implements BaseController<BookEntity, String> {
         if (Objects.nonNull(reserved)) {
             Specification<BookEntity> isReservedSpecification = BookSpecifications.isReserved();
             specification = specification.and(reserved ? isReservedSpecification : Specification.not(isReservedSpecification));
+        }
+
+        if (Strings.isNotBlank(genre)) {
+            specification = specification.and((root, cq, cb) -> cb.equal(root.get("release").get("genre"), genre));
         }
 
         return this.bookRepository.findAll(specification, pageable);
