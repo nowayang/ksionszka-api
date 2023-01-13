@@ -2,10 +2,14 @@ package com.github.Ksionzka.controller;
 
 import com.github.Ksionzka.controller.dto.CreateReservationRequest;
 import com.github.Ksionzka.persistence.entity.ReservationEntity;
+import com.github.Ksionzka.persistence.entity.UserEntity;
 import com.github.Ksionzka.persistence.repository.BookRepository;
 import com.github.Ksionzka.persistence.repository.ReservationRepository;
 import com.github.Ksionzka.persistence.repository.UserRepository;
+import com.github.Ksionzka.security.Role;
+import com.github.Ksionzka.security.SecurityContextMediator;
 import lombok.RequiredArgsConstructor;
+import org.apache.logging.log4j.util.Strings;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -18,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.time.ZonedDateTime;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/reservations")
@@ -27,22 +32,54 @@ public class ReservationController implements BaseController<ReservationEntity, 
     private final BookRepository bookRepository;
     private final UserRepository userRepository;
     private final SimpMessagingTemplate simpMessagingTemplate;
+    private final SecurityContextMediator securityContextMediator;
 
     @Override
+    public Page<ReservationEntity> findAll(Pageable pageable, String search) {
+        return this.findAll(pageable, search, null, null, null);
+    }
+
     @GetMapping()
     @Transactional(readOnly = true)
-    public Page<ReservationEntity> findAll(Pageable pageable, @RequestParam String search) {
+    public Page<ReservationEntity> findAll(Pageable pageable,
+                                           @RequestParam(required = false) String search,
+                                           @RequestParam(required = false) String bookNameLike,
+                                           @RequestParam(required = false) String authorLike,
+                                           @RequestParam(required = false) String releaseIdLike) {
         final String searchTerm = this.getSearchTerm(search);
-        return this.reservationRepository.findAll(
-            (Specification<ReservationEntity>)
-                (root, cq, cb) -> cb.or(
-                    cb.like(cb.lower(root.get("user").get("email")), searchTerm),
-                    cb.like(cb.lower(root.get("book").get("release").get("publisher")), searchTerm),
-                    cb.like(cb.lower(root.get("book").get("release").get("author")), searchTerm),
-                    cb.like(cb.lower(root.get("book").get("release").get("genre")), searchTerm)
-                ),
-            pageable
-        );
+
+        Specification<ReservationEntity> specification = Specification.where(null);
+
+        if (Strings.isNotBlank(search)) {
+            specification = specification.and((root, cq, cb) -> cb.or(
+                cb.like(cb.lower(root.get("user").get("email")), searchTerm),
+                cb.like(cb.lower(root.get("book").get("release").get("publisher")), searchTerm),
+                cb.like(cb.lower(root.get("book").get("release").get("author")), searchTerm),
+                cb.like(cb.lower(root.get("book").get("release").get("genre")), searchTerm)
+            ));
+        }
+
+        if (Strings.isNotBlank(bookNameLike)) {
+            specification = specification.and((root, cq, cb) -> cb.like(
+                cb.lower(root.get("book").get("name")), this.getSearchTerm(bookNameLike)));
+        }
+
+        if (Strings.isNotBlank(authorLike)) {
+            specification = specification.and((root, cq, cb) -> cb.like(
+                cb.lower(root.get("book").get("release").get("author")), this.getSearchTerm(authorLike)));
+        }
+
+        if (Strings.isNotBlank(releaseIdLike)) {
+            specification = specification.and((root, cq, cb) -> cb.like(
+                cb.lower(root.get("book").get("release").get("id")), this.getSearchTerm(releaseIdLike)));
+        }
+
+        UserEntity currentUser = this.securityContextMediator.getCurrentUser();
+        if (Role.USER.equals(currentUser.getRole())) {
+            specification = specification.and((root, cq, cb) -> cb.equal(root.get("user").get("id"), currentUser.getId()));
+        }
+
+        return this.reservationRepository.findAll(specification, pageable);
     }
 
     @Override
