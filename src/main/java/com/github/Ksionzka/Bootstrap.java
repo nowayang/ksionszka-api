@@ -27,10 +27,10 @@ public class Bootstrap {
     @PostConstruct
     @Transactional
     void bootstrapData() {
-        this.addUser(new UserEntity("admin", "admin", "admin@admin", "admin", Role.LIBRARIAN));
-        this.addUser(new UserEntity("Karol", "Nowacki", "karol.nowacki@gmail.com", "password", Role.LIBRARIAN));
-        this.addUser(new UserEntity("Andrzej", "Nowak", "andrze.nowak@gmail.com", "password", Role.USER));
-        this.addUser(new UserEntity("Władysław", "Mol", "władek2137@gmail.com", "password", Role.USER));
+        this.addUser(new UserEntity("admin", "admin", "admin@admin", "admin", Role.LIBRARIAN, true));
+        this.addUser(new UserEntity("Karol", "Nowacki", "karol.nowacki@gmail.com", "password", Role.LIBRARIAN, true));
+        this.addUser(new UserEntity("Andrzej", "Nowak", "andrze.nowak@gmail.com", "password", Role.USER, true));
+        this.addUser(new UserEntity("Władysław", "Mol", "władek2137@gmail.com", "password", Role.USER, true));
 
         this.addRelease("978-3-16-148410-0", "J.K. Rowling", "Rich publisher",
             Genre.Fantastyka, LocalDate.now(), List.of("001/15/2012", "002/15/2012", "003/15/2012"), "Morze czerwone");
