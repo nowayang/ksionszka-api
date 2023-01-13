@@ -3,7 +3,9 @@ package com.github.Ksionzka.security.registration;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.io.IOException;
 
 @RestController
 @RequestMapping("/api/register")
@@ -18,7 +20,8 @@ public class RegistrationController {
     }
 
     @GetMapping("/confirm")
-    public String confirm(@RequestParam String token) {
+    public String confirm(@RequestParam String token, HttpServletResponse response) throws IOException {
+        response.sendRedirect("https://www.google.com/");
         return registrationService.confirmToken(token);
     }
 }
