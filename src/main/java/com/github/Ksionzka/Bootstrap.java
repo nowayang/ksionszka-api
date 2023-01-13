@@ -9,6 +9,7 @@ import com.github.Ksionzka.persistence.repository.ReleaseRepository;
 import com.github.Ksionzka.persistence.repository.UserRepository;
 import com.github.Ksionzka.security.Role;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +24,8 @@ public class Bootstrap {
     private final UserRepository userRepository;
     private final ReleaseRepository releaseRepository;
     private final BookRepository bookRepository;
+    private final PasswordEncoder passwordEncoder;
+
 
     @PostConstruct
     @Transactional
@@ -42,6 +45,8 @@ public class Bootstrap {
     }
 
     void addUser(UserEntity userEntity) {
+        userEntity.setPassword(this.passwordEncoder.encode(userEntity.getPassword()));
+
         if (this.userRepository.findByEmail(userEntity.getEmail()).isEmpty()) {
             this.userRepository.saveAndFlush(userEntity);
         }
