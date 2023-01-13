@@ -30,7 +30,6 @@ import java.util.Optional;
 public class ReservationController implements BaseController<ReservationEntity, String> {
     private final ReservationRepository reservationRepository;
     private final BookRepository bookRepository;
-    private final UserRepository userRepository;
     private final SimpMessagingTemplate simpMessagingTemplate;
     private final SecurityContextMediator securityContextMediator;
 
@@ -73,7 +72,8 @@ public class ReservationController implements BaseController<ReservationEntity, 
 
         reservationEntity.setBook(this.bookRepository.getOrThrowById(request.getBookId()));
         reservationEntity.setReservationDate(ZonedDateTime.now().plusDays(2));
-        reservationEntity.setUser(this.userRepository.getOrThrowById(request.getUserId()));
+
+        reservationEntity.setUser(this.securityContextMediator.getCurrentUser());
         reservationEntity.setCreationDate(ZonedDateTime.now());
 
         return this.reservationRepository.save(reservationEntity);
