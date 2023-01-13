@@ -47,7 +47,7 @@ public class ReservationController implements BaseController<ReservationEntity, 
                 cb.like(cb.lower(root.get("user").get("email")), searchTerm),
                 cb.like(cb.lower(root.get("book").get("release").get("publisher")), searchTerm),
                 cb.like(cb.lower(root.get("book").get("release").get("author")), searchTerm),
-                cb.like(cb.lower(root.get("book").get("release").get("genre")), searchTerm)
+                cb.like(cb.lower(root.get("book").get("release").get("genre").as(String.class)), searchTerm)
             ));
         }
 

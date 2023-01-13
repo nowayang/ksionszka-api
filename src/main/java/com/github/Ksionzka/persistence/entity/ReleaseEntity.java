@@ -34,6 +34,6 @@ public class ReleaseEntity {
     @Column(columnDefinition = "varchar(255) not null")
     private String language;
 
-    @Column(columnDefinition = "varchar(255) not null")
-    private String genre;
+    @Enumerated(EnumType.STRING)
+    private Genre genre;
 }

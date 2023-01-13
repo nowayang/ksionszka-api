@@ -13,6 +13,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.Ksionzka.controller.dto.CreateBookRequest;
 import com.github.Ksionzka.controller.dto.UpdateBookRequest;
 import com.github.Ksionzka.persistence.entity.BookEntity;
+import com.github.Ksionzka.persistence.entity.Genre;
 import com.github.Ksionzka.persistence.entity.ReleaseEntity;
 import com.github.Ksionzka.persistence.repository.BookRepository;
 import com.github.Ksionzka.persistence.repository.ReleaseRepository;
@@ -57,7 +58,7 @@ class BookControllerTest {
         ReleaseEntity releaseEntity = new ReleaseEntity();
         releaseEntity.setAuthor("JaneDoe");
         releaseEntity.setReleaseDate(null);
-        releaseEntity.setGenre("Genre");
+        releaseEntity.setGenre(Genre.Biografia);
         releaseEntity.setId("42");
         releaseEntity.setLanguage("en");
         releaseEntity.setPublisher("Publisher");
@@ -71,7 +72,7 @@ class BookControllerTest {
         ReleaseEntity releaseEntity1 = new ReleaseEntity();
         releaseEntity1.setAuthor("JaneDoe");
         releaseEntity1.setReleaseDate(null);
-        releaseEntity1.setGenre("Genre");
+        releaseEntity1.setGenre(Genre.Biografia);
         releaseEntity1.setId("42");
         releaseEntity1.setLanguage("en");
         releaseEntity1.setPublisher("Publisher");
@@ -96,7 +97,7 @@ class BookControllerTest {
         ReleaseEntity releaseEntity = new ReleaseEntity();
         releaseEntity.setAuthor("JaneDoe");
         releaseEntity.setReleaseDate(null);
-        releaseEntity.setGenre("Genre");
+        releaseEntity.setGenre(Genre.Biografia);
         releaseEntity.setId("42");
         releaseEntity.setLanguage("en");
         releaseEntity.setPublisher("Publisher");
@@ -162,7 +163,7 @@ class BookControllerTest {
         ReleaseEntity releaseEntity = new ReleaseEntity();
         releaseEntity.setAuthor("JaneDoe");
         releaseEntity.setReleaseDate(null);
-        releaseEntity.setGenre("Genre");
+        releaseEntity.setGenre(Genre.Biografia);
         releaseEntity.setId("42");
         releaseEntity.setLanguage("en");
         releaseEntity.setPublisher("Publisher");
@@ -192,7 +193,7 @@ class BookControllerTest {
         ReleaseEntity releaseEntity = new ReleaseEntity();
         releaseEntity.setAuthor("JaneDoe");
         releaseEntity.setReleaseDate(null);
-        releaseEntity.setGenre("Genre");
+        releaseEntity.setGenre(Genre.Biografia);
         releaseEntity.setId("42");
         releaseEntity.setLanguage("en");
         releaseEntity.setPublisher("Publisher");
@@ -205,7 +206,7 @@ class BookControllerTest {
         ReleaseEntity releaseEntity1 = new ReleaseEntity();
         releaseEntity1.setAuthor("JaneDoe");
         releaseEntity1.setReleaseDate(null);
-        releaseEntity1.setGenre("Genre");
+        releaseEntity1.setGenre(Genre.Biografia);
         releaseEntity1.setId("42");
         releaseEntity1.setLanguage("en");
         releaseEntity1.setPublisher("Publisher");
@@ -219,7 +220,7 @@ class BookControllerTest {
         ReleaseEntity releaseEntity2 = new ReleaseEntity();
         releaseEntity2.setAuthor("JaneDoe");
         releaseEntity2.setReleaseDate(null);
-        releaseEntity2.setGenre("Genre");
+        releaseEntity2.setGenre(Genre.Biografia);
         releaseEntity2.setId("42");
         releaseEntity2.setLanguage("en");
         releaseEntity2.setPublisher("Publisher");

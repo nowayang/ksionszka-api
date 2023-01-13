@@ -3,6 +3,7 @@ package com.github.Ksionzka.controller;
 import com.github.Ksionzka.controller.dto.CreateBookRequest;
 import com.github.Ksionzka.controller.dto.UpdateBookRequest;
 import com.github.Ksionzka.persistence.entity.BookEntity;
+import com.github.Ksionzka.persistence.entity.Genre;
 import com.github.Ksionzka.persistence.repository.BookRepository;
 import com.github.Ksionzka.persistence.repository.ReleaseRepository;
 import com.github.Ksionzka.persistence.specification.BookSpecifications;
@@ -41,7 +42,7 @@ public class BookController implements BaseController<BookEntity, String> {
                                     @RequestParam(required = false) String releaseIdLike,
                                     @RequestParam(required = false) Boolean loaned,
                                     @RequestParam(required = false) Boolean reserved,
-                                    @RequestParam(required = false) String genre,
+                                    @RequestParam(required = false) Genre genre,
                                     @RequestParam(required = false) Long releaseYear) {
         final String searchTerm = this.getSearchTerm(search);
         Specification<BookEntity> specification = Specification.where(null);
@@ -52,7 +53,7 @@ public class BookController implements BaseController<BookEntity, String> {
                 cb.like(cb.lower(root.get("release").get("id")), searchTerm),
                 cb.like(cb.lower(root.get("release").get("publisher")), searchTerm),
                 cb.like(cb.lower(root.get("release").get("author")), searchTerm),
-                cb.like(cb.lower(root.get("release").get("genre")), searchTerm)
+                cb.like(cb.lower(root.get("release").get("genre").as(String.class)), searchTerm)
             ));
         }
 
@@ -81,7 +82,7 @@ public class BookController implements BaseController<BookEntity, String> {
             specification = specification.and(reserved ? isReservedSpecification : Specification.not(isReservedSpecification));
         }
 
-        if (Strings.isNotBlank(genre)) {
+        if (Objects.nonNull(genre)) {
             specification = specification.and((root, cq, cb) -> cb.equal(root.get("release").get("genre"), genre));
         }
 

@@ -1,5 +1,6 @@
 package com.github.Ksionzka.controller.dto;
 
+import com.github.Ksionzka.persistence.entity.Genre;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
@@ -25,6 +26,6 @@ public class CreateReleaseRequest {
     @NotBlank(message = "Language must not be blank")
     private String language;
 
-    @NotBlank(message = "Genre must not be blank")
-    private String genre;
+    @NotNull(message = "Genre must not be null")
+    private Genre genre;
 }
