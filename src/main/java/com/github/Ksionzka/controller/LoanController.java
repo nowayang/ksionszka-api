@@ -126,7 +126,8 @@ public class LoanController implements BaseController<LoanEntity, Long> {
         LoanEntity loanEntity = this.loanRepository.getOrThrowById(id);
 
         //todo nie mozna przedluzyc spoznionej ksiązki
-        loanEntity.setReturnDate(Optional.ofNullable(loanEntity.getReturnDate()).orElse(ZonedDateTime.now()).plusWeeks(1));
+        ZonedDateTime dateTime = Optional.ofNullable(loanEntity.getRequestedReturnDateExtensionAt()).orElse(ZonedDateTime.now());
+        loanEntity.setReturnDate(dateTime.plusWeeks(1));
         return this.loanRepository.save(loanEntity);
     }
 
@@ -136,7 +137,7 @@ public class LoanController implements BaseController<LoanEntity, Long> {
         LoanEntity loanEntity = this.loanRepository.getOrThrowById(id);
 
         //todo nie można zrequestować oddanej książki i spoznionej ksiązki
-        loanEntity.setRequestedReturnDateExtension(true);
+        loanEntity.setRequestedReturnDateExtensionAt(ZonedDateTime.now());
         return this.loanRepository.save(loanEntity);
     }
 

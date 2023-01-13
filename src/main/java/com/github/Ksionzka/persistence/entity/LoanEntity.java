@@ -33,6 +33,6 @@ public class LoanEntity {
     @JoinColumn(name = "book_id", referencedColumnName = "id", nullable = false)
     private BookEntity book;
 
-    @Column(nullable = false, columnDefinition = "bool default false")
-    private boolean requestedReturnDateExtension;
+    @Column
+    private ZonedDateTime requestedReturnDateExtensionAt;
 }
