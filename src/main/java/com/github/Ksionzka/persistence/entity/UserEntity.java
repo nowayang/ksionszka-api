@@ -51,6 +51,16 @@ public class UserEntity implements UserDetails {
         this.createdAt = ZonedDateTime.now();
     }
 
+    public UserEntity(String firstName, String lastName, String email, String password, Role role, boolean enabled) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.password = password;
+        this.role = role;
+        this.createdAt = ZonedDateTime.now();
+        this.enabled = enabled;
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         SimpleGrantedAuthority simpleGrantedAuthority = new SimpleGrantedAuthority("ROLE_" + role.name());
