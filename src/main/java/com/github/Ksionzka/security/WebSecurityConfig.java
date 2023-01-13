@@ -40,7 +40,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             .addFilterBefore(this.jwtRequestFilter, UsernamePasswordAuthenticationFilter.class)
             .csrf().disable().headers().frameOptions().disable()
             .and()
-            .cors().disable()
+            .cors()
+            .and()
             .authorizeRequests()
             .antMatchers("/api/register", "/api/register/confirm", "/api/login").permitAll()
             .antMatchers("/", "/csrf", "/v2/api-docs", "/swagger-resources/configuration/ui", "/configuration/ui",
