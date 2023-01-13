@@ -112,7 +112,7 @@ public class LoanController implements BaseController<LoanEntity, Long> {
     public LoanEntity returnLoan(@PathVariable Long id) {
         LoanEntity loanEntity = this.loanRepository.getOrThrowById(id);
 
-        if (!this.bookRepository.exists(id, BookSpecifications.isLoaned())) {
+        if (this.bookRepository.exists(id, BookSpecifications.isLoaned())) {
             throw RestException.of(HttpStatus.BAD_REQUEST, "Book is already returned");
         }
 
