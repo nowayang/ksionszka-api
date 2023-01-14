@@ -86,7 +86,8 @@ public class ReservationController implements BaseController<ReservationEntity, 
         this.reservationRepository.deleteById(Long.valueOf(id));
     }
 
-    @Scheduled(fixedRate = 15000)
+    @Deprecated
+//    @Scheduled(fixedRate = 15000)
     public void sendRecentReservations() {
         simpMessagingTemplate.convertAndSend("/topic/recent-reservations",
                 reservationRepository.findAll(
