@@ -179,8 +179,8 @@ public class LoanController implements BaseController<LoanEntity, Long> {
 
         Optional.ofNullable(loanEntity.getRequestedReturnDateExtensionAt()).ifPresentOrElse(
             date -> {
+                loanEntity.setReturnDate(loanEntity.getReturnDate().plusWeeks(1));
                 loanEntity.setRequestedReturnDateExtensionAt(null);
-                loanEntity.setReturnDate(date.plusWeeks(1));
             },
             () -> loanEntity.setReturnDate(loanEntity.getReturnDate().plusWeeks(1))
         );
