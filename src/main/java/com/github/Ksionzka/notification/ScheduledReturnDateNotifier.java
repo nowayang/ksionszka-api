@@ -19,15 +19,14 @@ public class ScheduledReturnDateNotifier {
     private final ApplicationEventPublisher publisher;
     private final LoanRepository loanRepository;
 
-//    @Scheduled(fixedRate = 60 * 60 * 1000)
-    @Scheduled(fixedRate = 1 * 1000)
+    @Scheduled(fixedRate = 60 * 60 * 1000)
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void notifyUsers() {
         this.loanRepository.findAll(
                 Specification.not(LoanSpecifications.isReturned())
                     .and(Specification.not(LoanSpecifications.isDelayed()))
                     .and((root, cq, cb) -> cb.isFalse(root.get("notificationSent")))
-                    .and((root, cq, cb) -> cb.lessThanOrEqualTo(root.get("returnDate"), ZonedDateTime.now().plusDays(8)))
+                    .and((root, cq, cb) -> cb.lessThanOrEqualTo(root.get("returnDate"), ZonedDateTime.now().plusDays(1)))
             )
             .stream()
             .peek(loanEntity -> loanEntity.setNotificationSent(true))
