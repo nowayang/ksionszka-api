@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
@@ -16,8 +17,14 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Root;
 import javax.validation.Valid;
-import java.time.ZonedDateTime;
 import java.util.Objects;
 
 @RestController
@@ -25,6 +32,9 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class ReleaseController implements BaseController<ReleaseEntity, String> {
     private final ReleaseRepository releaseRepository;
+
+    @PersistenceContext
+    private EntityManager entityManager;
 
     @Override
     @GetMapping()
@@ -45,6 +55,24 @@ public class ReleaseController implements BaseController<ReleaseEntity, String> 
         }
 
         return this.releaseRepository.findAll(specification, pageable);
+    }
+
+    @GetMapping("/top")
+    public Page<ReleaseEntity> findAll(Pageable pageable) {
+        CriteriaBuilder criteriaBuilder = this.entityManager.getCriteriaBuilder();
+        CriteriaQuery<ReleaseEntity> query = criteriaBuilder.createQuery(ReleaseEntity.class);
+        Root<LoanEntity> root = query.from(LoanEntity.class);
+
+        Expression<Long> count = criteriaBuilder.count(root.get("book").get("release").get("id"));
+
+        query.select(root.get("book").get("release"));
+        query.groupBy(root.get("book").get("release").get("id"));
+        query.orderBy(criteriaBuilder.desc(count));
+
+        TypedQuery<ReleaseEntity> typedQuery = this.entityManager.createQuery(query);
+        typedQuery.setMaxResults(pageable.getPageSize());
+
+        return new PageImpl<>(typedQuery.getResultList());
     }
 
     @Override
