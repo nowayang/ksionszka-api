@@ -11,8 +11,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import java.time.ZonedDateTime;
 
 @Component
@@ -21,15 +19,18 @@ public class ScheduledReturnDateNotifier {
     private final ApplicationEventPublisher publisher;
     private final LoanRepository loanRepository;
 
-    @Scheduled(fixedRate = 60 * 60 * 1000)
-    @Transactional(readOnly = true, propagation = Propagation.REQUIRES_NEW)
+//    @Scheduled(fixedRate = 60 * 60 * 1000)
+    @Scheduled(fixedRate = 1 * 1000)
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void notifyUsers() {
         this.loanRepository.findAll(
                 Specification.not(LoanSpecifications.isReturned())
                     .and(Specification.not(LoanSpecifications.isDelayed()))
-                    .and((root, cq, cb) -> cb.greaterThanOrEqualTo(root.get("returnDate"), ZonedDateTime.now().minusDays(2)))
+                    .and((root, cq, cb) -> cb.isFalse(root.get("notificationSent")))
+                    .and((root, cq, cb) -> cb.lessThanOrEqualTo(root.get("returnDate"), ZonedDateTime.now().plusDays(8)))
             )
             .stream()
+            .peek(loanEntity -> loanEntity.setNotificationSent(true))
             .map(ReturnDateNotification::new)
             .forEach(this::sendEvent);
     }

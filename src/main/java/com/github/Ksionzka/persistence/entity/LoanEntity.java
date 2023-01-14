@@ -36,4 +36,7 @@ public class LoanEntity {
 
     @Column
     private ZonedDateTime requestedReturnDateExtensionAt;
+
+    @Column(nullable = false, columnDefinition = "bool default false")
+    private boolean notificationSent;
 }
