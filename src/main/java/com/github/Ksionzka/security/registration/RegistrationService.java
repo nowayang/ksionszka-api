@@ -2,14 +2,17 @@ package com.github.Ksionzka.security.registration;
 
 import com.github.Ksionzka.exception.RestException;
 import com.github.Ksionzka.persistence.entity.UserEntity;
+import com.github.Ksionzka.persistence.repository.UserRepository;
 import com.github.Ksionzka.security.AppUserService;
 import com.github.Ksionzka.security.Role;
 import com.github.Ksionzka.security.email.EmailSender;
 import com.github.Ksionzka.security.registration.token.ConfirmationToken;
+import com.github.Ksionzka.security.registration.token.ConfirmationTokenRepository;
 import com.github.Ksionzka.security.registration.token.ConfirmationTokenService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -33,6 +36,12 @@ public class RegistrationService {
     @Value("${server.url}")
     private String serverUrl;
 
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private ConfirmationTokenRepository confirmationTokenRepository;
+
     public String register(RegistrationRequest request) {
 
         if (!emailValidator.test(request.getEmail())) {
@@ -54,7 +63,7 @@ public class RegistrationService {
     }
 
     @Transactional
-    public String confirmToken(String token) {
+    public ResponseEntity<?> confirmToken(String token) {
         ConfirmationToken confirmationToken = tokenService
                 .getToken(token)
                 .orElseThrow(() -> RestException.of(HttpStatus.BAD_REQUEST, "Token not found"));
@@ -66,13 +75,17 @@ public class RegistrationService {
         LocalDateTime expiredAt = confirmationToken.getExpiresAt();
 
         if (expiredAt.isBefore(LocalDateTime.now())) {
-            throw RestException.of(HttpStatus.BAD_REQUEST, "Token expired");
+            this.userRepository.delete(confirmationToken.getUser());
+            this.confirmationTokenRepository.delete(confirmationToken);
+            return ResponseEntity
+                .badRequest()
+                .body(RestException.of(HttpStatus.BAD_REQUEST, "Token expired"));
         }
 
         tokenService.setConfirmedAt(token);
         appUserService.enableAppUser(
                 confirmationToken.getUser().getEmail());
-        return "confirmed";
+        return ResponseEntity.ok("Confirmed");
     }
 
     private String buildEmail(String name, String link) {

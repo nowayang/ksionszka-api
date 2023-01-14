@@ -1,7 +1,8 @@
 package com.github.Ksionzka.security.registration;
 
-import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
@@ -10,9 +11,9 @@ import java.io.IOException;
 
 @RestController
 @RequestMapping("/api/register")
-@AllArgsConstructor
 public class RegistrationController {
 
+    @Autowired
     private RegistrationService registrationService;
 
     @Value("${client.url}")
@@ -24,7 +25,7 @@ public class RegistrationController {
     }
 
     @GetMapping("/confirm")
-    public String confirm(@RequestParam String token, HttpServletResponse response) throws IOException {
+    public ResponseEntity<?> confirm(@RequestParam String token, HttpServletResponse response) throws IOException {
         response.sendRedirect(this.clientUrl);
         return registrationService.confirmToken(token);
     }
