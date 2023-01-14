@@ -23,6 +23,8 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
 import javax.validation.Valid;
 import java.time.ZonedDateTime;
 import java.util.Objects;
@@ -40,14 +42,15 @@ public class LoanController implements BaseController<LoanEntity, Long> {
 
     @Override
     public Page<LoanEntity> findAll(Pageable pageable, String search) {
-        return this.findAll(pageable, search, null, null);
+        return this.findAll(pageable, search, null, null, null);
     }
 
     @GetMapping()
     @Transactional(readOnly = true)
     public Page<LoanEntity> findAll(Pageable pageable, @RequestParam(required = false) String search,
                                     @RequestParam(required = false) Boolean delayed,
-                                    @RequestParam(required = false) Boolean returned) {
+                                    @RequestParam(required = false) Boolean returned,
+                                    @RequestParam(required = false) Boolean requestedExtension) {
         final String searchTerm = this.getSearchTerm(search);
 
         Specification<LoanEntity> specification = Specification.where(null);
@@ -73,6 +76,11 @@ public class LoanController implements BaseController<LoanEntity, Long> {
             specification = specification.and(returned ? returnedSpec : Specification.not(returnedSpec));
         }
 
+        if (Objects.nonNull(requestedExtension)) {
+            Specification<LoanEntity> returnedSpec = LoanSpecifications.isRequestedExtension();
+            specification = specification.and(requestedExtension ? returnedSpec : Specification.not(returnedSpec));
+        }
+
         UserEntity currentUser = this.securityContextMediator.getCurrentUser();
         if (Role.USER.equals(currentUser.getRole())) {
             specification = specification.and((root, cq, cb) -> cb.equal(root.get("user").get("id"), currentUser.getId()));
@@ -85,7 +93,8 @@ public class LoanController implements BaseController<LoanEntity, Long> {
     @Transactional(readOnly = true)
     public Page<LoanEntity> findUserLoans(Pageable pageable, @PathVariable Long userId,
                                           @RequestParam(required = false) Boolean delayed,
-                                          @RequestParam(required = false) Boolean returned) {
+                                          @RequestParam(required = false) Boolean returned,
+                                          @RequestParam(required = false) Boolean requestedExtension) {
         Specification<LoanEntity> specification = (root, cq, cb) -> cb.equal(root.get("user").get("id"), userId);
 
         if (Objects.nonNull(delayed)) {
@@ -96,6 +105,11 @@ public class LoanController implements BaseController<LoanEntity, Long> {
         if (Objects.nonNull(returned)) {
             Specification<LoanEntity> returnedSpec = LoanSpecifications.isReturned();
             specification = specification.and(returned ? returnedSpec : Specification.not(returnedSpec));
+        }
+
+        if (Objects.nonNull(requestedExtension)) {
+            Specification<LoanEntity> returnedSpec = LoanSpecifications.isRequestedExtension();
+            specification = specification.and(requestedExtension ? returnedSpec : Specification.not(returnedSpec));
         }
 
         return this.loanRepository.findAll(specification, pageable);

@@ -20,4 +20,8 @@ public class LoanSpecifications {
     public static Specification<LoanEntity> isReturned() {
         return (root, cq, cb) -> cb.isNotNull(root.get("actualReturnDate"));
     }
+
+    public static Specification<LoanEntity> isRequestedExtension() {
+        return (root, cq, cb) -> cb.isNotNull(root.get("requestedReturnDateExtensionAt"));
+    }
 }
