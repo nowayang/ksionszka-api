@@ -40,7 +40,7 @@ class EmailServiceTest {
     void testSend() throws MailException {
         doNothing().when(javaMailSender).send((MimeMessage) any());
         when(javaMailSender.createMimeMessage()).thenReturn(new MimeMessage((Session) null));
-        emailService.send("alice.liddell@example.org", "jane.doe@example.org");
+        emailService.send("alice.liddell@example.org", "jane.doe@example.org", "trallala");
         verify(javaMailSender).createMimeMessage();
         verify(javaMailSender).send((MimeMessage) any());
     }
@@ -53,7 +53,7 @@ class EmailServiceTest {
         doThrow(RestException.of(HttpStatus.CONTINUE, "An error occurred")).when(javaMailSender)
                 .send((MimeMessage) any());
         when(javaMailSender.createMimeMessage()).thenReturn(new MimeMessage((Session) null));
-        assertThrows(RestException.class, () -> emailService.send("alice.liddell@example.org", "jane.doe@example.org"));
+        assertThrows(RestException.class, () -> emailService.send("alice.liddell@example.org", "jane.doe@example.org", "tralalla"));
         verify(javaMailSender).createMimeMessage();
         verify(javaMailSender).send((MimeMessage) any());
     }

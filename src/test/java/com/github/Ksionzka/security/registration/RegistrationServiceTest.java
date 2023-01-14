@@ -55,12 +55,12 @@ class RegistrationServiceTest {
     @Test
     void testRegister() {
         when(appUserService.signUpUser((UserEntity) any())).thenReturn("Sign Up User");
-        doNothing().when(emailSender).send((String) any(), (String) any());
+        doNothing().when(emailSender).send((String) any(), (String) any(), (String) any());
         when(emailValidator.test((String) any())).thenReturn(true);
         assertEquals("Sign Up User",
                 registrationService.register(new RegistrationRequest("Jane", "Doe", "jane.doe@example.org", "iloveyou")));
         verify(appUserService).signUpUser((UserEntity) any());
-        verify(emailSender).send((String) any(), (String) any());
+        verify(emailSender).send((String) any(), (String) any(), (String) any());
         verify(emailValidator).test((String) any());
     }
 
@@ -71,12 +71,12 @@ class RegistrationServiceTest {
     void testRegister2() {
         when(appUserService.signUpUser((UserEntity) any())).thenReturn("Sign Up User");
         doThrow(RestException.of(HttpStatus.CONTINUE, "An error occurred")).when(emailSender)
-                .send((String) any(), (String) any());
+                .send((String) any(), (String) any(), (String) any());
         when(emailValidator.test((String) any())).thenReturn(true);
         assertThrows(RestException.class, () -> registrationService
                 .register(new RegistrationRequest("Jane", "Doe", "jane.doe@example.org", "iloveyou")));
         verify(appUserService).signUpUser((UserEntity) any());
-        verify(emailSender).send((String) any(), (String) any());
+        verify(emailSender).send((String) any(), (String) any(), (String) any());
         verify(emailValidator).test((String) any());
     }
 
