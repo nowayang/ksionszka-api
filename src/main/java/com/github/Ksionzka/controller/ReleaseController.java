@@ -1,6 +1,7 @@
 package com.github.Ksionzka.controller;
 
 import com.github.Ksionzka.controller.dto.CreateReleaseRequest;
+import com.github.Ksionzka.exception.RestException;
 import com.github.Ksionzka.persistence.entity.LoanEntity;
 import com.github.Ksionzka.persistence.entity.ReleaseEntity;
 import com.github.Ksionzka.persistence.repository.ReleaseRepository;
@@ -10,12 +11,14 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.time.ZonedDateTime;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/api/releases")
@@ -54,7 +57,11 @@ public class ReleaseController implements BaseController<ReleaseEntity, String> 
     @PostMapping
     @Transactional
     @Secured("ROLE_LIBRARIAN")
-    public ReleaseEntity createRelease(@Valid  @RequestBody CreateReleaseRequest request) {
+    public ReleaseEntity createRelease(@Valid @RequestBody CreateReleaseRequest request) {
+        if (this.releaseRepository.existsById(request.getId())) {
+            throw RestException.of(HttpStatus.BAD_REQUEST, "Release ID exists");
+        }
+
         ReleaseEntity releaseEntity = new ReleaseEntity();
         BeanUtils.copyProperties(request, releaseEntity);
         return this.releaseRepository.save(releaseEntity);
@@ -65,6 +72,11 @@ public class ReleaseController implements BaseController<ReleaseEntity, String> 
     @Secured("ROLE_LIBRARIAN")
     public ReleaseEntity updateRelease(@PathVariable String id, @Valid @RequestBody CreateReleaseRequest request) {
         ReleaseEntity releaseEntity = this.getById(id);
+
+        if (!Objects.equals(request.getId(), releaseEntity.getId()) && this.releaseRepository.existsById(request.getId())) {
+            throw RestException.of(HttpStatus.BAD_REQUEST, "Release ID exists");
+        }
+
         BeanUtils.copyProperties(request, releaseEntity);
         return this.releaseRepository.save(releaseEntity);
     }
