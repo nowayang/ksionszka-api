@@ -30,7 +30,7 @@ public class UserController implements BaseController<UserEntity, Long> {
     public Page<UserEntity> findAll(Pageable pageable, @RequestParam(required = false) String search) {
         final String searchTerm = this.getSearchTerm(search);
 
-        Specification<UserEntity> specification = Specification.where(null);
+        Specification<UserEntity> specification = Specification.where((root, cq, cb) -> cb.isTrue(root.get("enabled")));
 
         if (Strings.isNotBlank(search)) {
             specification = specification.and((root, cq, cb) -> cb.or(
