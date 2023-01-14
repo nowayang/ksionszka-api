@@ -8,6 +8,9 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+
 @Component
 @RequiredArgsConstructor
 public class ReturnDateNotificationSender implements ApplicationListener<ReturnDateNotification> {
@@ -77,10 +80,11 @@ public class ReturnDateNotificationSender implements ApplicationListener<ReturnD
                 "      <td width=\"10\" valign=\"middle\"><br></td>\n" +
                 "      <td style=\"font-family:Helvetica,Arial,sans-serif;font-size:19px;line-height:1.315789474;max-width:560px\">\n" +
                 "        \n" +
-                "            <p style=\"Margin:0 0 20px 0;font-size:19px;line-height:25px;color:#0b0c0c\">Cześć " + loan.getUser().getFirstName() + ",</p><p style=\"Margin:0 0 20px 0;font-size:19px;line-height:25px;color:#0b0c0c\"> Książka: " + loan.getBook().getRelease().getTitle() + " </p>\n <b>Termin zwrotu: </b>" + loan.getReturnDate() +
-                "        \n" +
+                "            <p style=\"Margin:0 0 20px 0;font-size:19px;line-height:25px;color:#0b0c0c\">Cześć " + loan.getUser().getFirstName() + ",</p>" +
                 "        \n" +
                 "            <p style=\"Margin:0 0 20px 0;font-size:19px;line-height:25px;color:#0b0c0c\"> Zbilża się termin oddania wypożyczonej przez Ciebie książki. </p>\n" +
+                "        \n" +
+                "       <p style=\"Margin:0 0 20px 0;font-size:19px;line-height:25px;color:#0b0c0c\"> Książka: " + loan.getBook().getRelease().getTitle() + " </p>\n <b>Termin zwrotu: </b>" + DateTimeFormatter.ISO_LOCAL_DATE.format(loan.getReturnDate()) +
                 "        \n" +
                 "      </td>\n" +
                 "      <td width=\"10\" valign=\"middle\"><br></td>\n" +
