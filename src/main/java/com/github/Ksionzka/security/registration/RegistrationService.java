@@ -8,6 +8,7 @@ import com.github.Ksionzka.security.email.EmailSender;
 import com.github.Ksionzka.security.registration.token.ConfirmationToken;
 import com.github.Ksionzka.security.registration.token.ConfirmationTokenService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -29,6 +30,9 @@ public class RegistrationService {
     @Autowired
     private EmailSender emailSender;
 
+    @Value("${server.url}")
+    private String serverUrl;
+
     public String register(RegistrationRequest request) {
 
         if (!emailValidator.test(request.getEmail())) {
@@ -43,7 +47,7 @@ public class RegistrationService {
                         Role.USER
                 )
         );
-        String link = "http://localhost:8080/api/register/confirm?token=" + token;
+        String link = this.serverUrl + "/api/register/confirm?token=" + token;
         emailSender.send(request.getEmail(), buildEmail(request.getFirstName(), link), "Confirm your email");
 
         return token;
