@@ -65,3 +65,8 @@ tworzymy taki plik i odpalamy w przeglądarce
 ```
 http://localhost:8080/swagger-ui/index.html
 ```
+
+
+#### TODOS
+
+##### Notyfikacje na maila o zbliżających sie terminach
