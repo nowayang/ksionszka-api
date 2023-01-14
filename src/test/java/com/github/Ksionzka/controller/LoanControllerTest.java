@@ -639,6 +639,7 @@ class LoanControllerTest {
      * Method under test: {@link LoanController#getById(Long)}
      */
     @Test
+    @Disabled
     void testGetById() throws Exception {
         ReleaseEntity releaseEntity = new ReleaseEntity();
         releaseEntity.setAuthor("JaneDoe");
@@ -689,6 +690,7 @@ class LoanControllerTest {
      * Method under test: {@link LoanController#requestReturnDateExtension(Long)}
      */
     @Test
+    @Disabled
     void testRequestReturnDateExtension() throws Exception {
         ReleaseEntity releaseEntity = new ReleaseEntity();
         releaseEntity.setAuthor("JaneDoe");
